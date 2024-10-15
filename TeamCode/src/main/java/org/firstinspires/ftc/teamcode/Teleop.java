@@ -14,6 +14,7 @@ public class Teleop extends OpMode {
     private DcMotor BackRight;
 
     private Servo Claw;
+    private Servo rollerClaw;
 
     private boolean aButtonPreviousState;
     private boolean bButtonPreviousState;
@@ -29,6 +30,9 @@ public class Teleop extends OpMode {
 
         Claw = hardwareMap.get(Servo.class, "Claw");
         Claw.setDirection(Servo.Direction.REVERSE);
+
+        rollerClaw = hardwareMap.get(Servo.class, "rollerClaw");
+        rollerClaw.setDirection(Servo.Direction.REVERSE);
 
         FrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         BackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -55,6 +59,7 @@ public class Teleop extends OpMode {
     public void start(){
         resetRuntime();
         Claw.setPosition(0.0);
+        rollerClaw.setPosition(1.0);
     };
 
     @Override
