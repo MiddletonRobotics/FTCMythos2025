@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,11 +11,11 @@ import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
 @TeleOp(name= "Teleop")
 public class Teleop extends OpMode {
-    private DcMotor FrontLeft;
-    private DcMotor FrontRight;
-    private DcMotor BackLeft;
-    private DcMotor BackRight;
-    private DcMotor ViperMotor;
+    private DcMotorEx FrontLeft;
+    private DcMotorEx FrontRight;
+    private DcMotorEx BackLeft;
+    private DcMotorEx BackRight;
+    private DcMotorEx ViperMotor;
 
     private Servo Claw;
     private Servo Arm;
@@ -63,11 +64,11 @@ public class Teleop extends OpMode {
 
     @Override
     public void init() {
-        FrontLeft = hardwareMap.get(DcMotor.class, "FrontLeft");
-        FrontRight = hardwareMap.get(DcMotor.class, "FrontRight");
-        BackLeft = hardwareMap.get(DcMotor.class, "BackLeft");
-        BackRight = hardwareMap.get(DcMotor.class, "BackRight");
-        ViperMotor = hardwareMap.get(DcMotor.class, "ViperMotor");
+        FrontLeft = hardwareMap.get(DcMotorEx.class, "FrontLeft");
+        FrontRight = hardwareMap.get(DcMotorEx.class, "FrontRight");
+        BackLeft = hardwareMap.get(DcMotorEx.class, "BackLeft");
+        BackRight = hardwareMap.get(DcMotorEx.class, "BackRight");
+        ViperMotor = hardwareMap.get(DcMotorEx.class, "ViperMotor");
 
         Claw = hardwareMap.get(Servo.class, "Claw");
         Arm = hardwareMap.get(Servo.class, "Arm");
@@ -185,6 +186,10 @@ public class Teleop extends OpMode {
             ViperMotor.setTargetPosition(Constants.ViperRetractedPosition);
             ViperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ViperMotor.setPower(Constants.ViperConstantVelocity);
+            Arm.setPosition(Constants.ArmStoredPosition);
+            Claw.setPosition(Constants.ClawOpenedPosition);
+            ClawState = ClawMode.OPENED;
+            ArmState = ArmMode.STORED;
             ViperState = ViperMode.RETRACTED;
         } else if (gamepad1.x && !xButtonPreviousState){
             ViperMotor.setTargetPosition(Constants.ViperUpperGoalPosition);
@@ -206,6 +211,8 @@ public class Teleop extends OpMode {
             ViperMotor.setTargetPosition(Constants.ViperUpperSpecimanPosition);
             ViperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ViperMotor.setPower(Constants.ViperConstantVelocity);
+            Arm.setPosition(Constants.ArmOuttakingPosition);
+            ArmState = ArmMode.OUTTAKING;
             ViperState = ViperMode.SCORING;
         } else if (gamepad2.left_bumper && !leftBumperButtonPreviousStateG2){
             ViperMotor.setTargetPosition(Constants.ViperUpperSpecimanScoringPosition);
@@ -245,10 +252,10 @@ public class Teleop extends OpMode {
             BackLeft.setPower(thetaSpeeds[2]);
             BackRight.setPower(thetaSpeeds[3]);
         } else {
-            FrontLeft.setPower(thetaSpeeds[0] * 0.7);
-            FrontRight.setPower(thetaSpeeds[1] * 0.7);
-            BackLeft.setPower(thetaSpeeds[2] * 0.7);
-            BackRight.setPower(thetaSpeeds[3] * 0.7);
+            FrontLeft.setPower(thetaSpeeds[0] * 0.8);
+            FrontRight.setPower(thetaSpeeds[1] * 0.8);
+            BackLeft.setPower(thetaSpeeds[2] * 0.8);
+            BackRight.setPower(thetaSpeeds[3] * 0.8);
         }
     }
 }
