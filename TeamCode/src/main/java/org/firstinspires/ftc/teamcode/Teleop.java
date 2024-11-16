@@ -24,21 +24,17 @@ public class Teleop extends OpMode {
     private boolean bButtonPreviousStateG2, bButtonPreviousState;
     private boolean yButtonPreviousStateG2, yButtonPreviousState;
     private boolean xButtonPreviousStateG2, xButtonPreviousState;
-    private boolean leftBumperButtonPreviousStateG2, leftBumperButtonPreviousState;
-    private boolean rightBumperButtonPreviousStateG2, rightBumperButtonPreviousState;
-
-    private boolean SlowMode;
-    private boolean SpeedMode;
-
-    public enum DrivetrainState {
-        NORMAL,
-        SPEED,
-        SLOW
-    }
+    private boolean leftBumperButtonPreviousStateG2;
+    private boolean rightBumperButtonPreviousStateG2;
+    private boolean dpadUpBumperButtonPreviousState;
+    private boolean dpadDownBumperButtonPreviousState;
+    private boolean dpadRightBumperButtonPreviousState;
+    private boolean dpadLeftBumperButtonPreviousState;
 
     public enum ArmMode {
             STORED,
             INTAKING,
+            DELIVER,
             OUTTAKING
     }
 
@@ -57,7 +53,6 @@ public class Teleop extends OpMode {
         BOTTOMGOAL
     }
 
-    private DrivetrainState DrivetrainMode;
     private ViperMode ViperState;
     private ArmMode ArmState;
     private ClawMode ClawState;
@@ -93,15 +88,15 @@ public class Teleop extends OpMode {
         bButtonPreviousStateG2 = false;
         xButtonPreviousStateG2 = false;
         yButtonPreviousStateG2 = false;
-        leftBumperButtonPreviousState = false;
-        rightBumperButtonPreviousState = false;
         bButtonPreviousState = false;
         xButtonPreviousState = false;
         yButtonPreviousState = false;
         rightBumperButtonPreviousStateG2 = false;
         leftBumperButtonPreviousStateG2 = false;
-
-        SlowMode = false;
+        dpadUpBumperButtonPreviousState = false;
+        dpadDownBumperButtonPreviousState = false;
+        dpadRightBumperButtonPreviousState = false;
+        dpadLeftBumperButtonPreviousState = false;
 
         telemetry.addData("Status", "Initialized");
     }
@@ -115,7 +110,6 @@ public class Teleop extends OpMode {
         Claw.setPosition(Constants.ClawOpenedPosition);
         Arm.setPosition(Constants.ArmStoredPosition);
 
-        DrivetrainMode = DrivetrainState.NORMAL;
         ClawState = ClawMode.OPENED;
         ArmState = ArmMode.STORED;
     };
@@ -123,7 +117,7 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
         double drive = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
+        double strafe = gamepad1.left_stick_x * 1.1;
         double rotation = gamepad1.right_stick_x;
 
         telemetry.addData("Controller Left Y", -gamepad1.left_stick_y);
@@ -166,22 +160,6 @@ public class Teleop extends OpMode {
             ArmState = ArmMode.OUTTAKING;
         }
 
-        if(gamepad1.left_bumper && !leftBumperButtonPreviousState) {
-            SlowMode = !SlowMode;
-            if(SlowMode) {
-                DrivetrainMode = DrivetrainState.SLOW;
-            } else {
-                DrivetrainMode = DrivetrainState.NORMAL;
-            }
-        } else if(gamepad1.right_bumper && !rightBumperButtonPreviousState) {
-            SpeedMode = !SpeedMode;
-            if(SpeedMode) {
-                DrivetrainMode = DrivetrainState.SPEED;
-            } else {
-                DrivetrainMode = DrivetrainState.NORMAL;
-            }
-        }
-
         if(gamepad1.b && !bButtonPreviousState) {
             ViperMotor.setTargetPosition(Constants.ViperRetractedPosition);
             ViperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -212,13 +190,44 @@ public class Teleop extends OpMode {
             ViperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ViperMotor.setPower(Constants.ViperConstantVelocity);
             Arm.setPosition(Constants.ArmOuttakingPosition);
+            Claw.setPosition(Constants.ClawClosedPosition);
+            ClawState = ClawMode.CLOSED;
             ArmState = ArmMode.OUTTAKING;
             ViperState = ViperMode.SCORING;
         } else if (gamepad2.left_bumper && !leftBumperButtonPreviousStateG2){
             ViperMotor.setTargetPosition(Constants.ViperUpperSpecimanScoringPosition);
             ViperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ViperMotor.setPower(Constants.ViperConstantVelocity);
+            Arm.setPosition(Constants.ArmDeliverPosition);
+            ArmState = ArmMode.DELIVER;
             ViperState = ViperMode.SCORING;
+        }
+
+        if(gamepad1.dpad_up) {
+            FrontLeft.setPower(0.3);
+            FrontRight.setPower(0.3);
+            BackLeft.setPower(0.3);
+            BackRight.setPower(0.3);
+        } else if(gamepad1.dpad_down) {
+            FrontLeft.setPower(-0.3);
+            FrontRight.setPower(-0.3);
+            BackLeft.setPower(-0.3);
+            BackRight.setPower(-0.3);
+        } else if(gamepad1.dpad_left) {
+            FrontLeft.setPower(-0.3);
+            FrontRight.setPower(0.3);
+            BackLeft.setPower(0.3);
+            BackRight.setPower(-0.3);
+        } else if(gamepad1.dpad_right) {
+            FrontLeft.setPower(0.3);
+            FrontRight.setPower(-0.3);
+            BackLeft.setPower(-0.3);
+            BackRight.setPower(0.3);
+        } else {
+            FrontLeft.setPower(0.0);
+            FrontRight.setPower(0.0);
+            BackLeft.setPower(0.0);
+            BackRight.setPower(0.0 );
         }
 
         aButtonPreviousStateG2 = gamepad2.a;
@@ -226,8 +235,6 @@ public class Teleop extends OpMode {
         bButtonPreviousStateG2 = gamepad2.b;
         xButtonPreviousStateG2 = gamepad2.x;
         yButtonPreviousStateG2 = gamepad2.y;
-        leftBumperButtonPreviousState = gamepad1.left_bumper;
-        rightBumperButtonPreviousState = gamepad1.right_bumper;
         bButtonPreviousState = gamepad1.b;
         xButtonPreviousState = gamepad1.x;
         yButtonPreviousState = gamepad1.y;
@@ -241,21 +248,9 @@ public class Teleop extends OpMode {
                 (drive + strafe - rotation),
         };
 
-        if(SlowMode) {
-            FrontLeft.setPower(thetaSpeeds[0] * 0.35);
-            FrontRight.setPower(thetaSpeeds[1] * 0.35);
-            BackLeft.setPower(thetaSpeeds[2] * 0.35);
-            BackRight.setPower(thetaSpeeds[3] * 0.35);
-        } else if (SpeedMode) {
-            FrontLeft.setPower(thetaSpeeds[0]);
-            FrontRight.setPower(thetaSpeeds[1]);
-            BackLeft.setPower(thetaSpeeds[2]);
-            BackRight.setPower(thetaSpeeds[3]);
-        } else {
-            FrontLeft.setPower(thetaSpeeds[0] * 0.8);
-            FrontRight.setPower(thetaSpeeds[1] * 0.8);
-            BackLeft.setPower(thetaSpeeds[2] * 0.8);
-            BackRight.setPower(thetaSpeeds[3] * 0.8);
-        }
+        FrontLeft.setPower(thetaSpeeds[0] * 0.8);
+        FrontRight.setPower(thetaSpeeds[1] * 0.8);
+        BackLeft.setPower(thetaSpeeds[2] * 0.8);
+        BackRight.setPower(thetaSpeeds[3] * 0.8);
     }
 }
