@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
-
 @TeleOp(name= "Teleop")
 public class Teleop extends OpMode {
     private DcMotorEx FrontLeft;

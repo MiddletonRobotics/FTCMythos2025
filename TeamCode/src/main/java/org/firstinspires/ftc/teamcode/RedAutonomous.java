@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
-
 @Autonomous(name="RedAutonomous")
 public class RedAutonomous extends OpMode {
     private DcMotor FrontLeft;
