@@ -2,40 +2,32 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.arcrobotics.ftclib.drivebase.RobotDrive;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
-public class MecanumDrive extends RobotDrive {
-    private double rightSideMultiplier;
-    Motor[] motors;
-
-    /**
-     * Sets up the constructor for the mecanum drive.
-     * Automatically inverts right side by default
-     *
-     * @param frontLeft  the front left motor
-     * @param frontRight the front right motor
-     * @param backLeft   the back left motor
-     * @param backRight  the back right motor
-     */
-
-    public MecanumDrive(Motor frontLeft, Motor frontRight, Motor backLeft, Motor backRight) {
-        this(true, frontLeft, frontRight, backLeft, backRight);
-    }
+public class DrivetrainSubsystem extends RobotDrive {
+    DcMotorEx frontLeft, frontRight,backLeft, backRight;
+    DcMotorEx[] motors;
 
     /**
      * The constructor for the mecanum drive.
      *
-     * @param autoInversion Whether or not to automatically invert the right motors
-     * @param frontLeft  the front left motor
-     * @param frontRight the front right motor
-     * @param backLeft   the back left motor
-     * @param backRight  the back right motor
+     * @param aHardwareMap Passing through HardwareMap from OpMode
      */
 
-    public MecanumDrive(boolean autoInversion, Motor frontLeft, Motor frontRight, Motor backLeft, Motor backRight) {
-        motors = new Motor[]{frontLeft, frontRight, backLeft, backRight};
-        setRightSideInverted(autoInversion);
+    public DrivetrainSubsystem(HardwareMap aHardwareMap) {
+        frontLeft = aHardwareMap.get(DcMotorEx.class, "leftFront");
+        frontRight = aHardwareMap.get(DcMotorEx.class, "rightFront");
+        backLeft = aHardwareMap.get(DcMotorEx.class, "leftBack");
+        backRight = aHardwareMap.get(DcMotorEx.class, "rightBack");
+
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motors = new DcMotorEx[]{frontLeft, frontRight, backLeft, backRight};
+
     }
 
     public void setRange(double min, double max) {
@@ -45,15 +37,6 @@ public class MecanumDrive extends RobotDrive {
     public void setMaxSpeed(double value) {
         super.setMaxSpeed(value);
     }
-
-    public void setRightSideInverted(boolean isInverted) {
-        rightSideMultiplier = isInverted ? -1.0 : 1.0;
-    }
-
-    public boolean isRightSideInverted() {
-        return rightSideMultiplier == -1.0;
-    }
-
 
     /**
      * Drives the motors directly with the specified motor powers.
@@ -66,10 +49,10 @@ public class MecanumDrive extends RobotDrive {
      */
 
     public void driveWithMotorPowers(double frontLeftSpeed, double frontRightSpeed, double backLeftSpeed, double backRightSpeed) {
-        motors[MotorType.kFrontLeft.value].set(frontLeftSpeed * maxOutput);
-        motors[MotorType.kFrontRight.value].set(frontRightSpeed * maxOutput);
-        motors[MotorType.kBackLeft.value].set(backLeftSpeed * maxOutput);
-        motors[MotorType.kBackRight.value].set(backRightSpeed * maxOutput);
+        motors[MotorType.kFrontLeft.value].setPower(frontLeftSpeed * maxOutput);
+        motors[MotorType.kFrontRight.value].setPower(frontRightSpeed * maxOutput);
+        motors[MotorType.kBackLeft.value].setPower(backLeftSpeed * maxOutput);
+        motors[MotorType.kBackRight.value].setPower(backRightSpeed * maxOutput);
     }
 
     /**
@@ -93,10 +76,10 @@ public class MecanumDrive extends RobotDrive {
         double theta = input.angle();
 
         double[] wheelSpeeds = new double[4];
-        wheelSpeeds[MotorType.kFrontLeft.value] = Math.sin(theta + Math.PI / 4);
-        wheelSpeeds[MotorType.kFrontRight.value] = Math.sin(theta - Math.PI / 4);
-        wheelSpeeds[MotorType.kBackLeft.value] = Math.sin(theta - Math.PI / 4);
-        wheelSpeeds[MotorType.kBackRight.value] = Math.sin(theta + Math.PI / 4);
+        wheelSpeeds[0] = Math.sin(theta + Math.PI / 4);
+        wheelSpeeds[1] = Math.sin(theta - Math.PI / 4);
+        wheelSpeeds[2] = Math.sin(theta - Math.PI / 4);
+        wheelSpeeds[3] = Math.sin(theta + Math.PI / 4);
 
         normalize(wheelSpeeds, input.magnitude());
 
@@ -167,8 +150,8 @@ public class MecanumDrive extends RobotDrive {
 
     @Override
     public void stop() {
-        for(Motor motor : motors) {
-            motor.stopMotor();
+        for(DcMotorEx motor : motors) {
+            motor.setPower(0);
         }
     }
 }
