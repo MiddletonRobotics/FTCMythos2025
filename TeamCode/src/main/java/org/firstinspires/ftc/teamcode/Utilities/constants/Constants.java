@@ -25,7 +25,6 @@ public class Constants {
     public static final double leftouttakeArmScorePosition = 0.1;
     public static final double leftouttakeBucketPosition = 0.65;
 
-    public static final double outtakeWristStorePosition= 0.8;
     public static final double outtakeWristTransferPosition = 0.07;
     public static final double outtakeWristIntakePosition = 0.28;
     public static final double outtakeWristScorePosition = 0.15;
@@ -38,12 +37,12 @@ public class Constants {
     public static final double leftPivotServoIntakeUpPosition = 0.54;
     public static final double leftPivotServoIntakeDownPosition = 0.68;
 
-    public static final double intakeArmLockPosition = 0.89;
-
     public static final double rightPivotServoStorePosition= 0.0;
     public static final double rightPivotServoTransferPosition = 0.18;
     public static final double rightPivotServoIntakeUpPosition = 0.54;
     public static final double rightPivotServoIntakeDownPosition = 0.68;
+
+    public static final double intakeArmLockPosition = 0.89;
 
     public static final double linkageServoInPosition = 1.0;
     public static final double linkageServoOutPosition = 0.0;
