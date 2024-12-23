@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunner.tuning;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="HuskyLensLocalization")
-public class AprilTagLocalization extends OpMode {
+public class HuskyLocalization extends OpMode {
     private final int READ_PERIOD = 1;
     private HuskyLens huskyLens;
     private Deadline rateLimit;
