@@ -11,14 +11,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
 @TeleOp
 public class BlueTeleop extends OpMode {
-    private DrivetrainSubsystem drivetrain;
+    private MecanumDrive drivetrain;
     private ElevatorSubsystem elevator;
     private IntakeSubsystem intake;
     private DcMotor viperMotor;
@@ -35,7 +35,7 @@ public class BlueTeleop extends OpMode {
 
     @Override
     public void init() {
-        drivetrain = new DrivetrainSubsystem(hardwareMap);
+        drivetrain = new MecanumDrive(hardwareMap);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
 

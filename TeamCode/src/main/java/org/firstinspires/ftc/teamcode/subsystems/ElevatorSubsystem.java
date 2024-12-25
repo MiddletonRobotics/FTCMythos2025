@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -17,6 +18,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.utilities.PIDFController;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final Servo leftArmServo, rightArmServo, wristServo, grabberServo;
@@ -53,6 +57,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ArmState manipulatorState = ArmState.SPECIMAN_SCORE;
     private ClawState clawState = ClawState.CLOSE_CLAW;
 
+    private FtcDashboard dash = FtcDashboard.getInstance();
+    private List<Action> runningActions = new ArrayList<>();
+
     /**
      * The constructor for the elevator subsystem.
      *
@@ -80,24 +87,43 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorController = new PIDFController(0.001, 0, 0.0001, 0);
         elevatorController.setTolerance(50);
 
+        targetPosition = 0;
         this.telemetry = telemetry;
     }
 
     @Override
     public void periodic() {
-        viperMotor.setPower(elevatorController.calculate(viperMotor.getCurrentPosition(), targetPosition));
+        //handleElevatorPID();
+        viperMotor.setTargetPosition((int) targetPosition);
+        viperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        viperMotor.setPower(0.7);
 
-        switch (viperState){
+        TelemetryPacket packet = new TelemetryPacket();
+
+        List<Action> newActions = new ArrayList<>();
+        for (Action action : runningActions) {
+            action.preview(packet.fieldOverlay());
+            if (action.run(packet)) {
+                newActions.add(action);
+            }
+        }
+
+        runningActions = newActions;
+        dash.sendTelemetryPacket(packet);
+
+        switch (viperState) {
             case RETRACTED:
                 targetPosition = Constants.ViperRetractedPosition;
             case SPECIMAN_READY:
                 targetPosition = Constants.ViperSpecimanReadyPosition;
             case SPECIMAN_SCORE:
                 targetPosition = Constants.ViperSpecimanScorePosition;
-            case LOW_GOAL:
-                targetPosition = Constants.ViperLowGoalPosition;
             case HIGH_GOAL:
                 targetPosition = Constants.ViperHighGoalPosition;
+            case LOW_GOAL:
+                targetPosition = Constants.ViperLowGoalPosition;
+            default:
+                targetPosition = 0;
         }
 
         switch (manipulatorState){
@@ -113,14 +139,28 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         switch (clawState){
             case OPEN_CLAW:
-                openClaw();
+                runningActions.add(openClaw());
             case CLOSE_CLAW:
-                closeClaw();
+                runningActions.add(closeClaw());
         }
 
         telemetry.addData("Viper Current Position", getViperPosition());
         telemetry.addData("Viper Target Position", targetPosition);
+        telemetry.addData("Viper Power", viperMotor.getPower());
         telemetry.addData("Viper State", viperState);
+        telemetry.addData("Arm State", manipulatorState);
+        telemetry.addData("Claw State", clawState);
+        telemetry.update();
+    }
+
+    public void handleElevatorPID() {
+        if (targetPosition == 0) {
+            viperMotor.setPower(0.0);
+            return;
+        }
+
+        double output = elevatorController.calculate(viperMotor.getCurrentPosition(), targetPosition);
+        setViperPower(output);
     }
 
     public int getViperPosition() {
@@ -137,6 +177,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void setClawState(ClawState clawState) {
         this.clawState = clawState;
+    }
+
+    public void setViperPower(double input) {
+        viperMotor.setPower(input);
     }
 
     public boolean viperAtPosition() {
