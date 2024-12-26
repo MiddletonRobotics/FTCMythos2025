@@ -4,31 +4,25 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 
-public class ScoreBucketThenRetract extends CommandBase {
+// TODO: Fix the isFinished() function
+
+public class IntakeFromWall extends CommandBase {
     private final ElevatorSubsystem elevatorSubsystem;
 
-    public ScoreBucketThenRetract(ElevatorSubsystem elevatorSubsystem) {
+    public IntakeFromWall(ElevatorSubsystem elevatorSubsystem) {
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(elevatorSubsystem);
     }
 
     @Override
     public void initialize() {
+        elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.INTAKING);
         elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.OPEN_CLAW);
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
-    public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.25) {
-            elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.TRANSFER);
-        } else if (elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.375) {
-            elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.RETRACTED);
-        }
-    }
-
-    @Override
     public boolean isFinished() {
-        return elevatorSubsystem.getViperPosition() < 150;
+        return elevatorSubsystem.viperAtPosition();
     }
 }

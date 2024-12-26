@@ -93,10 +93,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        //handleElevatorPID();
         viperMotor.setTargetPosition((int) targetPosition);
         viperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        viperMotor.setPower(0.7);
+        viperMotor.setPower(1);
 
         TelemetryPacket packet = new TelemetryPacket();
 
@@ -111,38 +110,44 @@ public class ElevatorSubsystem extends SubsystemBase {
         runningActions = newActions;
         dash.sendTelemetryPacket(packet);
 
-        switch (viperState) {
-            case RETRACTED:
-                targetPosition = Constants.ViperRetractedPosition;
-            case SPECIMAN_READY:
-                targetPosition = Constants.ViperSpecimanReadyPosition;
-            case SPECIMAN_SCORE:
-                targetPosition = Constants.ViperSpecimanScorePosition;
-            case HIGH_GOAL:
-                targetPosition = Constants.ViperHighGoalPosition;
-            case LOW_GOAL:
-                targetPosition = Constants.ViperLowGoalPosition;
-            default:
-                targetPosition = 0;
+        if (viperState == LiftState.RETRACTED) {
+            targetPosition = Constants.ViperRetractedPosition;
+        } else if (viperState == LiftState.SPECIMAN_READY) {
+            targetPosition = Constants.ViperSpecimanReadyPosition;
+        } else if (viperState == LiftState.SPECIMAN_SCORE) {
+            targetPosition = Constants.ViperSpecimanScorePosition;
+        } else if (viperState == LiftState.HIGH_GOAL) {
+            targetPosition = Constants.ViperHighGoalPosition;
+        } else if (viperState == LiftState.LOW_GOAL) {
+            targetPosition = Constants.ViperLowGoalPosition;
         }
+
+        if(manipulatorState == ArmState.SPECIMAN_READY) {
+            runningActions.add(prepareToScore());
+        } else if (manipulatorState == ArmState.INTAKING) {
+            runningActions.add(intakingPosition());
+        }
+
+        if(clawState == ClawState.CLOSE_CLAW) {
+            runningActions.add(closeClaw());
+        } else if (clawState == ClawState.OPEN_CLAW) {
+            runningActions.add(openClaw());
+        }
+
+        /*
 
         switch (manipulatorState){
             case TRANSFER:
-                transfer();
+                runningActions.add(transfer());
             case HIGH_GOAL:
-                prepareToScore();
             case INTAKING:
                 intakingPosition();
             case SPECIMAN_READY:
+                runningActions.add(prepareToScore());
             case SPECIMAN_SCORE:
         }
 
-        switch (clawState){
-            case OPEN_CLAW:
-                runningActions.add(openClaw());
-            case CLOSE_CLAW:
-                runningActions.add(closeClaw());
-        }
+        */
 
         telemetry.addData("Viper Current Position", getViperPosition());
         telemetry.addData("Viper Target Position", targetPosition);
@@ -154,11 +159,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void handleElevatorPID() {
-        if (targetPosition == 0) {
-            viperMotor.setPower(0.0);
-            return;
-        }
-
         double output = elevatorController.calculate(viperMotor.getCurrentPosition(), targetPosition);
         setViperPower(output);
     }
@@ -381,10 +381,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!initialized) {
-                closeClaw();
-                leftArmServo.setPosition(Constants.leftouttakeArmIntakePosition);
-                rightArmServo.setPosition(Constants.rightouttakeArmIntakePosition);
-                wristServo.setPosition(Constants.outtakeWristIntakePosition);
+                openClaw();
+                leftArmServo.setPosition(Constants.ElevatorArmIntakingPosition);
+                rightArmServo.setPosition(Constants.ElevatorArmIntakingPosition);
+                wristServo.setPosition(Constants.ElevatorWristIntakingPosition);
                 initialized = true;
             }
 
@@ -403,9 +403,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (!initialized) {
                 closeClaw();
-                leftArmServo.setPosition(Constants.leftouttakeArmScorePosition);
-                rightArmServo.setPosition(Constants.rightouttakeArmScorePosition);
-                wristServo.setPosition(Constants.outtakeWristScorePosition);
+                leftArmServo.setPosition(Constants.ElevatorArmSpecimanPosition);
+                rightArmServo.setPosition(Constants.ElevatorArmSpecimanPosition);
+                wristServo.setPosition(Constants.ElevatorWristSpecimanPosition);
                 initialized = true;
             }
 

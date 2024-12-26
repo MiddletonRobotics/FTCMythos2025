@@ -10,6 +10,14 @@ public class Constants {
     public static final double ViperLowGoalPosition = 2200;
     public static final double ViperHighGoalPosition = 4000;
 
+    public static final double ElevatorArmTransferPosition = 0.0;
+    public static final double ElevatorArmIntakingPosition = 1.0;
+    public static final double ElevatorArmBucketPosition = 0.5;
+    public static final double ElevatorArmSpecimanPosition = 0.075;
+
+    public static final double ElevatorWristSpecimanPosition = 0.4;
+    public static final double ElevatorWristIntakingPosition = 0.53;
+
     public static final double outtakeClawClosedPosition = 1;
     public static final double outtakeClawOpenPosition = 0.0;
 
