@@ -37,7 +37,7 @@ public class BlueTeleop extends OpMode {
     public void init() {
         drivetrain = new MecanumDrive(hardwareMap);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         viperMotor = hardwareMap.get(DcMotorEx.class, "viperMotor");
         viperMotor.setDirection(DcMotorSimple.Direction.REVERSE);

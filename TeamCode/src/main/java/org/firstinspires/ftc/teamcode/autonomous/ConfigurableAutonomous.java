@@ -219,7 +219,9 @@ public class ConfigurableAutonomous extends LinearOpMode {
         Pose2d initialPose = new Pose2d(-64, -8, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         ElevatorSubsystem elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap);
+        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry);
+
+        /*
 
         TrajectoryActionBuilder speciman = drive.actionBuilder(initialPose)
                 .afterTime(0.5, new ParallelAction(
@@ -237,6 +239,8 @@ public class ConfigurableAutonomous extends LinearOpMode {
         //                        .setTangent(0)
 //                                .splineToConstantHeading(new Vector2d(-64, ))
 
+         */
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -245,7 +249,7 @@ public class ConfigurableAutonomous extends LinearOpMode {
         telemetry.addData("Heading", drive.pose.heading);
 
         Actions.runBlocking(new SequentialAction(
-                speciman.build()
+                //speciman.build()
         ));
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,7 +21,7 @@ public class TuningTeleop extends OpMode {
     private MecanumDrive drivetrain;
     private ElevatorSubsystem elevator;
     private IntakeSubsystem intake;
-    private DcMotor viperMotor;
+    private DcMotorEx viperMotor;
     private Gamepad driverController, operatorController;
     YawPitchRollAngles robotOrientation;
     private BHI260IMU imu;
@@ -29,19 +30,18 @@ public class TuningTeleop extends OpMode {
     private Servo leftArmServo, rightArmServo, wristServo, grabberServo;
     private Servo linkageServo, leftIntakeArmServo, rightIntakeArmServo, wristIntakeServo, grabberIntakeServo;
 
-    private boolean aButtonPreviousState, bButtonPreviousState, yButtonPreviousState, xButtonPreviousState, leftBumperButtonPreviousState, rightBumperButtonPreviousState;
-    private boolean aButtonPreviousStateG2, bButtonPreviousStateG2, yButtonPreviousStateG2, xButtonPreviousStateG2, leftBumperButtonPreviousStateG2, rightBumperButtonPreviousStateG2, DPUPButtonPreviousStateG2;
+    private PIDController elevatorController;
 
     @Override
     public void init() {
         drivetrain = new MecanumDrive(hardwareMap);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         viperMotor = hardwareMap.get(DcMotorEx.class, "viperMotor");
         viperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         viperMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        viperMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        viperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         grabberServo = hardwareMap.get(Servo.class, "outtakeClaw");
         wristServo = hardwareMap.get(Servo.class, "outtakeWrist");
@@ -65,43 +65,15 @@ public class TuningTeleop extends OpMode {
         wristIntakeServo.setDirection(Servo.Direction.FORWARD);
         grabberIntakeServo.setDirection(Servo.Direction.FORWARD);
 
-        /*
-
-        imuParameters = new IMU.Parameters(new RevHubOrientationOnRobot(new Orientation(
-                AxesReference.INTRINSIC,
-                AxesOrder.ZYX,
-                AngleUnit.DEGREES,
-                90,
-                0,
-                0,
-                0
-        )));
-
-        imu.initialize(imuParameters);
-
-        */
-
-        aButtonPreviousState = false;
-        bButtonPreviousState = false;
-        yButtonPreviousState = false;
-        xButtonPreviousState = false;
-        leftBumperButtonPreviousState = false;
-        rightBumperButtonPreviousState = false;
-
-        aButtonPreviousStateG2 = false;
-        bButtonPreviousStateG2 = false;
-        xButtonPreviousStateG2 = false;
-        yButtonPreviousStateG2 = false;
-        leftBumperButtonPreviousStateG2 = false;
-        rightBumperButtonPreviousStateG2 = false;
-        DPUPButtonPreviousStateG2 = false;
+        elevatorController = new PIDController(0.015, 0, 0.0001);
+        elevatorController.setTolerance(50);
     }
 
     /**
      * Positions for all servos on the IntoTheDeep Robot
      *  - rightElevatorArm and leftElevatorArm is zeroed at the transfer position, where from there
      *    counts up as it rotates through the entire bot
-     *  - elevatorWrist is zeroed with the arm all the way down past intaking position with the wris
+     *  - elevatorWrist is zeroed with the arm all the way down past intaking position with the wrist
      *    facing upward
      */
 
@@ -117,6 +89,22 @@ public class TuningTeleop extends OpMode {
             wristServo.setPosition(0.0);
         } else if (gamepad1.y) {
             wristServo.setPosition(1.0);
+        } else if (gamepad1.left_bumper) {
+            viperMotor.setPower(elevatorController.calculate(viperMotor.getCurrentPosition(), 3000));
+        } else if (gamepad1.right_bumper) {
+            viperMotor.setPower(elevatorController.calculate(viperMotor.getCurrentPosition(), 0));
+        } else if (gamepad1.dpad_left) {
+            leftIntakeArmServo.setPosition(0.0);
+            rightIntakeArmServo.setPosition(0.0);
+        } else if (gamepad1.dpad_right) {
+            leftIntakeArmServo.setPosition(1.0);
+            rightIntakeArmServo.setPosition(1.0);
         }
+
+
+        telemetry.addData("TargetPosition", elevatorController.getSetPoint());
+        telemetry.addData("CurrentPosition", viperMotor.getCurrentPosition());
+        telemetry.addData("CurrentPositionError", elevatorController.getPositionError());
+        telemetry.addData("ViperMotorPower", viperMotor.getPower());
     }
 }

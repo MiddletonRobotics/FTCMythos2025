@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.Commands;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.utilities.PIDFController;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
@@ -33,32 +35,80 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Timer elevatorTimer = new Timer();
 
     public enum LiftState {
-        RETRACTED,
-        SPECIMAN_READY,
-        SPECIMAN_SCORE,
-        LOW_GOAL,
-        HIGH_GOAL
+        RETRACTED(Constants.ViperRetractedPosition),
+        SPECIMAN_READY(Constants.ViperSpecimanReadyPosition),
+        SPECIMAN_SCORE(Constants.ViperSpecimanScorePosition),
+        LOW_GOAL(Constants.ViperLowGoalPosition),
+        HIGH_GOAL(Constants.ViperHighGoalPosition);
+
+        private final double position;
+
+        private LiftState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
     public enum ArmState {
-        TRANSFER,
-        HIGH_GOAL,
-        SPECIMAN_READY,
-        SPECIMAN_SCORE,
-        INTAKING
+        TRANSFER(Constants.ElevatorArmTransferPosition),
+        BUCKET(Constants.ElevatorArmBucketPosition),
+        SPECIMAN_READY(Constants.ElevatorArmSpecimanPosition),
+        SPECIMAN_SCORE(Constants.ElevatorArmSpecimanPosition),
+        INTAKING(Constants.ElevatorArmIntakingPosition);
+
+        private final double position;
+
+        private ArmState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
+    }
+
+    public enum WristState {
+        TRANSFER(Constants.ElevatorWristTransferPosition),
+        BUCKET(Constants.ElevatorWristBucketPosition),
+        SPECIMAN_READY(Constants.ElevatorWristSpecimanPosition),
+        SPECIMAN_SCORE(Constants.ElevatorWristSpecimanPosition),
+        INTAKING(Constants.ElevatorWristIntakingPosition);
+
+        private final double position;
+
+        private WristState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
     public enum ClawState {
-        OPEN_CLAW,
-        CLOSE_CLAW,
+        OPEN_CLAW(Constants.ElevatorClawOpenPosition),
+        CLOSE_CLAW(Constants.ElevatorClawClosedPosition);
+
+        private final double position;
+
+        private ClawState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
     private LiftState viperState = LiftState.RETRACTED;
-    private ArmState manipulatorState = ArmState.SPECIMAN_SCORE;
+    private ArmState armState = ArmState.TRANSFER;
+    private WristState wristState = WristState.TRANSFER;
     private ClawState clawState = ClawState.CLOSE_CLAW;
 
-    private FtcDashboard dash = FtcDashboard.getInstance();
-    private List<Action> runningActions = new ArrayList<>();
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     /**
      * The constructor for the elevator subsystem.
@@ -71,6 +121,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         viperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         viperMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         viperMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        viperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         grabberServo = aHardwareMap.get(Servo.class, "outtakeClaw");
         wristServo = aHardwareMap.get(Servo.class, "outtakeWrist");
@@ -84,8 +135,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         leftArmServo.setDirection(Servo.Direction.REVERSE);
         rightArmServo.setDirection(Servo.Direction.FORWARD);
 
-        elevatorController = new PIDFController(0.001, 0, 0.0001, 0);
-        elevatorController.setTolerance(50);
+        elevatorController = new PIDFController(0.016, 0, 0.00008, 0);
+        elevatorController.setTolerance(20);
 
         targetPosition = 0;
         this.telemetry = telemetry;
@@ -93,348 +144,75 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        viperMotor.setTargetPosition((int) targetPosition);
-        viperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        viperMotor.setPower(1);
-
-        TelemetryPacket packet = new TelemetryPacket();
-
-        List<Action> newActions = new ArrayList<>();
-        for (Action action : runningActions) {
-            action.preview(packet.fieldOverlay());
-            if (action.run(packet)) {
-                newActions.add(action);
-            }
-        }
-
-        runningActions = newActions;
-        dash.sendTelemetryPacket(packet);
-
-        if (viperState == LiftState.RETRACTED) {
-            targetPosition = Constants.ViperRetractedPosition;
-        } else if (viperState == LiftState.SPECIMAN_READY) {
-            targetPosition = Constants.ViperSpecimanReadyPosition;
-        } else if (viperState == LiftState.SPECIMAN_SCORE) {
-            targetPosition = Constants.ViperSpecimanScorePosition;
-        } else if (viperState == LiftState.HIGH_GOAL) {
-            targetPosition = Constants.ViperHighGoalPosition;
-        } else if (viperState == LiftState.LOW_GOAL) {
-            targetPosition = Constants.ViperLowGoalPosition;
-        }
-
-        if(manipulatorState == ArmState.SPECIMAN_READY) {
-            runningActions.add(prepareToScore());
-        } else if (manipulatorState == ArmState.INTAKING) {
-            runningActions.add(intakingPosition());
-        }
-
-        if(clawState == ClawState.CLOSE_CLAW) {
-            runningActions.add(closeClaw());
-        } else if (clawState == ClawState.OPEN_CLAW) {
-            runningActions.add(openClaw());
-        }
-
-        /*
-
-        switch (manipulatorState){
-            case TRANSFER:
-                runningActions.add(transfer());
-            case HIGH_GOAL:
-            case INTAKING:
-                intakingPosition();
-            case SPECIMAN_READY:
-                runningActions.add(prepareToScore());
-            case SPECIMAN_SCORE:
-        }
-
-        */
-
         telemetry.addData("Viper Current Position", getViperPosition());
         telemetry.addData("Viper Target Position", targetPosition);
         telemetry.addData("Viper Power", viperMotor.getPower());
         telemetry.addData("Viper State", viperState);
-        telemetry.addData("Arm State", manipulatorState);
+        telemetry.addData("Arm State", armState);
+        telemetry.addData("Wrist State", wristState);
         telemetry.addData("Claw State", clawState);
         telemetry.update();
     }
 
-    public void handleElevatorPID() {
-        double output = elevatorController.calculate(viperMotor.getCurrentPosition(), targetPosition);
-        setViperPower(output);
+    public void elevatorToPosition(LiftState liftState) {
+        setLiftState(liftState);
+        targetPosition = viperState.getPosition();
+        viperMotor.setPower(elevatorController.calculate(getViperPosition(), targetPosition));
+    }
+
+    public void manipulatorToPosition(ArmState armState, WristState wristState, ClawState clawState) {
+        setArmState(armState);
+        setWristState(wristState);
+        setClawState(clawState);
+
+        leftArmServo.setPosition(this.armState.getPosition());
+        rightArmServo.setPosition(this.armState.getPosition());
+        wristServo.setPosition(this.wristState.getPosition());
+        grabberServo.setPosition(this.clawState.getPosition());
+    }
+
+    private void setLiftState(LiftState liftState) {
+        viperState = liftState;
+    }
+
+    private void setArmState(ArmState armState) {
+        this.armState = armState;
+    }
+
+    private void setWristState(WristState wristState) {
+        this.wristState = wristState;
+    }
+
+    private void setClawState(ClawState clawState) {
+        this.clawState = clawState;
+    }
+
+    public LiftState getLiftState() {
+        return viperState;
+    }
+
+    public ArmState getArmState() {
+        return armState;
+    }
+
+    public WristState getWristState() {
+        return wristState;
+    }
+
+    public ClawState getClawState() {
+        return clawState;
     }
 
     public int getViperPosition() {
         return viperMotor.getCurrentPosition();
     }
 
-    public void setLiftState(LiftState liftState) {
-        viperState = liftState;
+    public double getTargetPosition() {
+        return elevatorController.getSetPoint();
     }
 
-    public void setArmState(ArmState armState) {
-        manipulatorState = armState;
-    }
 
-    public void setClawState(ClawState clawState) {
-        this.clawState = clawState;
-    }
-
-    public void setViperPower(double input) {
-        viperMotor.setPower(input);
-    }
-
-    public boolean viperAtPosition() {
+    public boolean viperAtTarget() {
         return elevatorController.atSetPoint();
-    }
-
-    public class ElevatorHighBucketPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperState = LiftState.HIGH_GOAL;
-                initialized = true;
-            }
-
-            double currentPosition = viperMotor.getCurrentPosition();
-            telemetryPacket.put("viperPosition", currentPosition);
-            if (elevatorController.atSetPoint()) {
-                return false;
-            } else {
-                periodic();
-                return true;
-            }
-        }
-    }
-
-    public Action elevatorHighBucketPosition() {
-        return new ElevatorHighBucketPosition();
-    }
-
-    public class ElevatorLowBucketPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperState = LiftState.LOW_GOAL;
-                initialized = true;
-            }
-
-            double currentPosition = viperMotor.getCurrentPosition();
-            telemetryPacket.put("viperPosition", currentPosition);
-            if (elevatorController.atSetPoint()) {
-                return false;
-            } else {
-                periodic();
-                return true;
-            }
-        }
-    }
-
-    public Action elevatorLowBucketPosition() {
-        return new ElevatorLowBucketPosition();
-    }
-
-    public class ElevatorSpecimanScorePosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperState = LiftState.SPECIMAN_SCORE;
-                initialized = true;
-            }
-
-            double currentPosition = viperMotor.getCurrentPosition();
-            telemetryPacket.put("viperPosition", currentPosition);
-            if (elevatorController.atSetPoint()) {
-                return false;
-            } else {
-                periodic();
-                return true;
-            }
-        }
-    }
-
-    public Action elevatorSpecimanScorePosition() {
-        return new ElevatorSpecimanScorePosition();
-    }
-
-    public class ElevatorSpecimanReadyPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperState = LiftState.SPECIMAN_READY;
-                initialized = true;
-            }
-
-            double currentPosition = viperMotor.getCurrentPosition();
-            telemetryPacket.put("viperPosition", currentPosition);
-            if (elevatorController.atSetPoint()) {
-                return false;
-            } else {
-                periodic();
-                return true;
-            }
-        }
-    }
-
-    public Action elevatorSpecimanReadyPosition() {
-        return new ElevatorSpecimanReadyPosition();
-    }
-
-    public class ElevatorRetractedPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperState = LiftState.RETRACTED;
-                initialized = true;
-            }
-
-            double currentPosition = viperMotor.getCurrentPosition();
-            telemetryPacket.put("viperPosition", currentPosition);
-            if (elevatorController.atSetPoint()) {
-                return false;
-            } else {
-                periodic();
-                return true;
-            }
-        }
-    }
-
-    public Action elevatorRetractedPosition() {
-        return new ElevatorRetractedPosition();
-    }
-
-    public class ElevatorHoming implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                viperMotor.setPower(-0.2);
-                initialized = true;
-            }
-
-            boolean isViperHomed = magneticLimitSwitch.isPressed();
-            telemetryPacket.put("isViperHomed", isViperHomed);
-            if (magneticLimitSwitch.isPressed()) {
-                viperMotor.setPower(0.0);
-                return false;
-            } else {
-                return true;
-            }
-        }
-    }
-
-    public Action homeElevator() {
-        return new ElevatorHoming();
-    }
-
-    /* Outtake Servo Positions  */
-
-    public class OpenClaw implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                grabberServo.setPosition(Constants.outtakeClawOpenPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action openClaw() {
-        return new OpenClaw();
-    }
-
-    public class CloseClaw implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                grabberServo.setPosition(Constants.outtakeClawClosedPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action closeClaw() {
-        return new CloseClaw();
-    }
-
-    public class SpecimanIntakingPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                openClaw();
-                leftArmServo.setPosition(Constants.ElevatorArmIntakingPosition);
-                rightArmServo.setPosition(Constants.ElevatorArmIntakingPosition);
-                wristServo.setPosition(Constants.ElevatorWristIntakingPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action intakingPosition() {
-        return new SpecimanIntakingPosition();
-    }
-
-    public class PrepareToScore implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                closeClaw();
-                leftArmServo.setPosition(Constants.ElevatorArmSpecimanPosition);
-                rightArmServo.setPosition(Constants.ElevatorArmSpecimanPosition);
-                wristServo.setPosition(Constants.ElevatorWristSpecimanPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action prepareToScore() {
-        return new PrepareToScore();
-    }
-
-    public class Transfer implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                closeClaw();
-                leftArmServo.setPosition(Constants.leftouttakeArmTransferPosition);
-                rightArmServo.setPosition(Constants.rightouttakeArmTransferPosition);
-                wristServo.setPosition(Constants.outtakeWristTransferPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action transfer() {
-        return new Transfer();
     }
 }

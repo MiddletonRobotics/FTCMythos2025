@@ -17,6 +17,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.commands.ScoreSpecimanThenRetract;
 import org.firstinspires.ftc.teamcode.commands.UninterruptableCommand;
 
 import org.firstinspires.ftc.teamcode.commands.Commands;
@@ -41,7 +42,7 @@ public class RobotController extends CommandOpMode {
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton outtakeClaw, intakeClaw, retractViper, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator;
+    private GamepadButton outtakeClaw, intakeClaw, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -50,7 +51,7 @@ public class RobotController extends CommandOpMode {
     public void initialize() {
         drivetrain = new DrivetrainSubsystem(hardwareMap);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -63,8 +64,8 @@ public class RobotController extends CommandOpMode {
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
 
+        resetHeading = new GamepadButton(driverController, GamepadKeys.Button.Y);
         outtakeClaw = new GamepadButton(driverController, GamepadKeys.Button.X);
-        retractViper = new GamepadButton(driverController, GamepadKeys.Button.B);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
 
@@ -73,17 +74,25 @@ public class RobotController extends CommandOpMode {
         sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
         retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
 
-        outtakeClaw
-                .whenPressed(new InstantCommand((() -> elevator.setClawState(ElevatorSubsystem.ClawState.OPEN_CLAW)), elevator))
-                .whenReleased(new InstantCommand((() -> elevator.setClawState(ElevatorSubsystem.ClawState.CLOSE_CLAW)), elevator));
+        resetHeading.whenPressed(new InstantCommand((() -> drivetrain.resetHeading(imu)), drivetrain));
+        outtakeClaw.whenPressed(
+                new InstantCommand((() -> elevator.manipulatorToPosition(
+                        elevator.getArmState(),
+                        elevator.getWristState(),
+                        ElevatorSubsystem.ClawState.OPEN_CLAW
+                )), elevator)).whenReleased(new InstantCommand((() -> elevator.manipulatorToPosition(
+                        elevator.getArmState(),
+                        elevator.getWristState(),
+                        ElevatorSubsystem.ClawState.CLOSE_CLAW
+                )), elevator)
+        );
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
-        retractViper.whenPressed(new RetractElevator(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
-        scoreSpeciman.whenPressed(new InstantCommand((() -> elevator.setLiftState(ElevatorSubsystem.LiftState.SPECIMAN_SCORE)), elevator));
+        scoreSpeciman.whenPressed(new ScoreSpecimanThenRetract(elevator));
         sampleScoring.whenPressed(new PrepareBucket(elevator));
         retractElevator.whenPressed(new UninterruptableCommand(new ConditionalCommand(
-                new SequentialCommandGroup(new ScoreBucketThenRetract(elevator), new WaitCommand(500), new RetractElevator(elevator)),
+                new ScoreBucketThenRetract(elevator),
                 new RetractElevator(elevator),
                 () -> elevator.getViperPosition() > 3000
         )));
@@ -94,8 +103,20 @@ public class RobotController extends CommandOpMode {
     }
 
     @Override
-    public void run() {
-        telemetry.addData("test", retractElevator.get());
-        telemetry.update();
+    public void runOpMode() {
+        initialize();
+
+        while (!opModeIsActive()) {
+
+        }
+
+        waitForStart();
+
+        // run the scheduler
+        while (!isStopRequested() && opModeIsActive()) {
+            run();
+        }
+
+        reset();
     }
 }

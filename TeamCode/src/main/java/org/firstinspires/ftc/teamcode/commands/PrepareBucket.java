@@ -14,20 +14,24 @@ public class PrepareBucket extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.HIGH_GOAL);
-        elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.CLOSE_CLAW);
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
     public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.8) {
-            elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.HIGH_GOAL);
+        elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.HIGH_GOAL);
+
+        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.8) {
+            elevatorSubsystem.manipulatorToPosition(
+                    ElevatorSubsystem.ArmState.BUCKET,
+                    ElevatorSubsystem.WristState.BUCKET,
+                    ElevatorSubsystem.ClawState.CLOSE_CLAW
+            );
         }
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.viperAtPosition();
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 2.1;
     }
 }

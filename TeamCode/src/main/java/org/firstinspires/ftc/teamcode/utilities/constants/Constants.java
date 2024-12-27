@@ -10,13 +10,39 @@ public class Constants {
     public static final double ViperLowGoalPosition = 2200;
     public static final double ViperHighGoalPosition = 4000;
 
-    public static final double ElevatorArmTransferPosition = 0.0;
+    public static final double ElevatorArmTransferPosition = 0.05;
     public static final double ElevatorArmIntakingPosition = 1.0;
     public static final double ElevatorArmBucketPosition = 0.5;
-    public static final double ElevatorArmSpecimanPosition = 0.075;
+    public static final double ElevatorArmSpecimanPosition = 0.1;
 
+    public static final double ElevatorWristTransferPosition = 0.75;
     public static final double ElevatorWristSpecimanPosition = 0.4;
+    public static final double ElevatorWristBucketPosition = 0.2;
     public static final double ElevatorWristIntakingPosition = 0.53;
+
+    public static final double ElevatorClawOpenPosition = 0.0;
+    public static final double ElevatorClawClosedPosition = 1.0;
+
+    /* Intake Subysystem Constants */
+
+    public static final double IntakeClawClosedPosition = 0.0;
+    public static final double IntakeClawOpenedPosition = 0.23;
+
+    public static final double IntakeArmStorePosition = 0.0;
+    public static final double IntakeArmTransferPosition = 0.0;
+    public static final double IntakeArmReadyPosition = 0.6;
+    public static final double IntakeArmIntakingPosition = 0.8;
+
+    public static final double IntakeLinkageServoInPosition = 1.0;
+    public static final double IntakeLinkageServoOutPosition = 0.0;
+    public static final double IntakeLinkageServoTransferPosition = 0.0;
+
+    public static final double IntakeWristRegularPosition = 0.89;
+    public static final double IntakeWristAngled30Position = 0.89;
+    public static final double IntakeWristAngled60Position = 0.89;
+    public static final double IntakeWristAngled90Position = 0.89;
+
+
 
     public static final double outtakeClawClosedPosition = 1;
     public static final double outtakeClawOpenPosition = 0.0;

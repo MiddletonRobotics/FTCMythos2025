@@ -15,21 +15,32 @@ public class ScoreSpecimanThenRetract extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.SPECIMAN_SCORE);
-        elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.SPECIMAN_SCORE);
+        elevatorSubsystem.manipulatorToPosition(
+                ElevatorSubsystem.ArmState.SPECIMAN_SCORE,
+                ElevatorSubsystem.WristState.SPECIMAN_SCORE,
+                elevatorSubsystem.getClawState()
+        );
+
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
     public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.375) {
-            elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.OPEN_CLAW);
-            elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.RETRACTED);
+        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.75) {
+            elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.SPECIMAN_SCORE);
+        } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.75 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 1) {
+            elevatorSubsystem.manipulatorToPosition(
+                    elevatorSubsystem.getArmState(),
+                    elevatorSubsystem.getWristState(),
+                    ElevatorSubsystem.ClawState.OPEN_CLAW
+            );
+        } else if (elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 1) {
+            elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.getViperPosition() < Constants.ViperSpecimanReadyPosition - 400;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 3;
     }
 }

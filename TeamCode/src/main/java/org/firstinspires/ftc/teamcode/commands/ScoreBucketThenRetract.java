@@ -14,21 +14,30 @@ public class ScoreBucketThenRetract extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.OPEN_CLAW);
+        elevatorSubsystem.manipulatorToPosition(
+                elevatorSubsystem.getArmState(),
+                elevatorSubsystem.getWristState(),
+                ElevatorSubsystem.ClawState.OPEN_CLAW
+        );
+
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
     public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.25) {
-            elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.TRANSFER);
-        } else if (elevatorSubsystem.elevatorTimer.getElapsedTime() >= 0.375) {
-            elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.RETRACTED);
+        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.25 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.375) {
+            elevatorSubsystem.manipulatorToPosition(
+                    ElevatorSubsystem.ArmState.TRANSFER,
+                    ElevatorSubsystem.WristState.TRANSFER,
+                    ElevatorSubsystem.ClawState.OPEN_CLAW
+            );
+        } else if (elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.375) {
+            elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.getViperPosition() < 150;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 2.25;
     }
 }

@@ -14,14 +14,22 @@ public class PrepareSpeciman extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.SPECIMAN_READY);
-        elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.SPECIMAN_READY);
-        elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.CLOSE_CLAW);
+        elevatorSubsystem.manipulatorToPosition(
+                ElevatorSubsystem.ArmState.SPECIMAN_READY,
+                ElevatorSubsystem.WristState.SPECIMAN_READY,
+                ElevatorSubsystem.ClawState.CLOSE_CLAW
+        );
+
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
+    public void execute() {
+        elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.SPECIMAN_READY);
+    }
+
+    @Override
     public boolean isFinished() {
-        return elevatorSubsystem.viperAtPosition();
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 1.5;
     }
 }

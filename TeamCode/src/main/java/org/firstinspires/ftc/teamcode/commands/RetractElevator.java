@@ -14,12 +14,17 @@ public class RetractElevator extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setLiftState(ElevatorSubsystem.LiftState.RETRACTED);
+        elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
+        elevatorSubsystem.manipulatorToPosition(
+                ElevatorSubsystem.ArmState.TRANSFER,
+                ElevatorSubsystem.WristState.TRANSFER,
+                ElevatorSubsystem.ClawState.OPEN_CLAW
+        );
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.viperAtPosition();
+        return elevatorSubsystem.getViperPosition() < 1.25;
     }
 }

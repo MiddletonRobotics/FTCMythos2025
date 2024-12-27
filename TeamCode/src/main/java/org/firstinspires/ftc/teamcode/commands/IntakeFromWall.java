@@ -16,13 +16,17 @@ public class IntakeFromWall extends CommandBase {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setArmState(ElevatorSubsystem.ArmState.INTAKING);
-        elevatorSubsystem.setClawState(ElevatorSubsystem.ClawState.OPEN_CLAW);
+        elevatorSubsystem.manipulatorToPosition(
+                ElevatorSubsystem.ArmState.INTAKING,
+                ElevatorSubsystem.WristState.INTAKING,
+                ElevatorSubsystem.ClawState.OPEN_CLAW
+        );
+
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.viperAtPosition();
+        return elevatorSubsystem.elevatorTimer.getElapsedTime() > 0.5;
     }
 }

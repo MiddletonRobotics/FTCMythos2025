@@ -36,7 +36,7 @@ public class SpecimanAutonomous extends OpMode {
     @Override
     public void init() {
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake =  new IntakeSubsystem(hardwareMap);
+        intake =  new IntakeSubsystem(hardwareMap, telemetry);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();

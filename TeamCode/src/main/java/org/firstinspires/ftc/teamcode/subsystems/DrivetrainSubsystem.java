@@ -16,6 +16,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         mecanumDrive = new MecanumDrive(aHardwareMap);
     }
 
+    public void resetHeading(IMU imu) {
+        imu.resetYaw();
+    }
+
     public void driveFieldCentric(double strafeSpeed, double forwardSpeed, double rotationalSpeed, IMU imu, boolean squareInputs) {
         YawPitchRollAngles gyroAngles = imu.getRobotYawPitchRollAngles();
         mecanumDrive.driveFieldCentric(strafeSpeed, forwardSpeed, rotationalSpeed, gyroAngles.getYaw(AngleUnit.DEGREES), squareInputs);

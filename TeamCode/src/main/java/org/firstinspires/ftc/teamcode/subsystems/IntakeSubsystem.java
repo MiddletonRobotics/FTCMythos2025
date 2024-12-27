@@ -9,34 +9,87 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final Servo linkageServo, leftArmServo, rightArmServo, wristServo, grabberServo;
+    private Telemetry telemetry;
+
+    public Timer intakeTimer = new Timer();
 
     public enum ExtensionState {
-        STORED,
-        TRANSFER,
-        EXTENDED
+        STORED(Constants.IntakeLinkageServoInPosition),
+        TRANSFER(Constants.IntakeLinkageServoTransferPosition),
+        EXTENDED(Constants.IntakeLinkageServoOutPosition);
+
+        private final double position;
+
+        private ExtensionState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
     public enum ArmState {
-        STORED,
-        TRANSFER,
-        READY,
-        INTAKING
+        STORED(Constants.IntakeArmStorePosition),
+        TRANSFER(Constants.IntakeArmTransferPosition),
+        READY(Constants.IntakeArmReadyPosition),
+        INTAKING(Constants.IntakeArmIntakingPosition);
+
+        private final double position;
+
+        private ArmState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
-    public enum GrabberState {
-        CLOSED,
-        OPEN,
+    public enum WristState {
+        NORMAL(Constants.IntakeWristRegularPosition),
+        ANGLED_30(Constants.IntakeWristAngled30Position),
+        ANGLED_60(Constants.IntakeWristAngled60Position),
+        ANGLED_90(Constants.IntakeWristAngled90Position);
+
+        private final double position;
+
+        private WristState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
     }
 
-    ExtensionState extensionState;
-    GrabberState grabberState;
-    ArmState armState;
+    public enum ClawState {
+        OPEN_CLAW(Constants.IntakeClawOpenedPosition),
+        CLOSE_CLAW(Constants.IntakeClawClosedPosition);
 
-    public IntakeSubsystem(HardwareMap aHardwareMap) {
+        private final double position;
+
+        private ClawState(double position) {
+            this.position = position;
+        }
+
+        public double getPosition() {
+            return this.position;
+        }
+    }
+
+    ExtensionState extensionState = ExtensionState.STORED;
+    ArmState armState = ArmState.STORED;
+    WristState wristState = WristState.NORMAL;
+    ClawState clawState = ClawState.OPEN_CLAW;
+
+    public IntakeSubsystem(HardwareMap aHardwareMap, Telemetry telemetry) {
         linkageServo = aHardwareMap.get(Servo.class, "linkageServo");
         leftArmServo = aHardwareMap.get(Servo.class, "leftPivotServo");
         rightArmServo = aHardwareMap.get(Servo.class, "rightPivotServo");
@@ -48,187 +101,61 @@ public class IntakeSubsystem extends SubsystemBase {
         rightArmServo.setDirection(Servo.Direction.FORWARD);
         wristServo.setDirection(Servo.Direction.FORWARD);
         grabberServo.setDirection(Servo.Direction.FORWARD);
+
+        this.telemetry = telemetry;
     }
 
-    public class LockedWrist implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                wristServo.setPosition(Constants.intakeArmLockPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
+    @Override
+    public void periodic() {
+        telemetry.addData("Extension State", extensionState);
+        telemetry.addData("Arm State", armState);
+        telemetry.addData("Wrist State", wristState);
+        telemetry.addData("Claw State", clawState);
+        telemetry.update();
     }
 
-    public Action lockWrist() {
-        return new LockedWrist();
+    public void intakeToPosition(ExtensionState extensionState, ArmState armState, WristState wristState, ClawState clawState) {
+        setExtensionState(extensionState);
+        setArmState(armState);
+        setWristState(wristState);
+        setClawState(clawState);
+
+        linkageServo.setPosition(this.extensionState.getPosition());
+        leftArmServo.setPosition(this.armState.getPosition());
+        rightArmServo.setPosition(this.armState.getPosition());
+        wristServo.setPosition(this.wristState.getPosition());
+        grabberServo.setPosition(this.clawState.getPosition());
     }
 
-    public class OpenClaw implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                grabberServo.setPosition(Constants.intakeClawOpenPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
+    public ExtensionState getExtensionState() {
+        return extensionState;
     }
 
-    public Action openClaw() {
-        return new OpenClaw();
+    public ArmState getArmState() {
+        return armState;
     }
 
-    public class CloseClaw implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                grabberServo.setPosition(Constants.intakeClawClosedPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
+    public WristState getWristState() {
+        return wristState;
     }
 
-    public Action closeClaw() {
-        return new CloseClaw();
+    public ClawState getClawState() {
+        return clawState;
     }
 
-    public class ExtendIntake implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                linkageServo.setPosition(Constants.linkageServoOutPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
+    private void setExtensionState(ExtensionState extensionState) {
+        this.extensionState = extensionState;
     }
 
-    public Action extendIntake() {
-        return new ExtendIntake();
+    private void setArmState(ArmState armState) {
+        this.armState = armState;
     }
 
-    public class RetractIntake implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                linkageServo.setPosition(Constants.linkageServoInPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
+    private void setWristState(WristState wristState) {
+        this.wristState = wristState;
     }
 
-    public Action retractIntake() {
-        return new RetractIntake();
-    }
-
-    public class StartingPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                closeClaw();
-                retractIntake();
-                lockWrist();
-
-                leftArmServo.setPosition(Constants.leftPivotServoStorePosition);
-                rightArmServo.setPosition(Constants.rightPivotServoStorePosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action startingPosition() {
-        return new StartingPosition();
-    }
-
-    public class TransferPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                closeClaw();
-                retractIntake();
-                lockWrist();
-
-                leftArmServo.setPosition(Constants.leftPivotServoTransferPosition);
-                rightArmServo.setPosition(Constants.rightPivotServoTransferPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action transferPosition() {
-        return new TransferPosition();
-    }
-
-    public class IntakePreperation implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                openClaw();
-                extendIntake();
-                lockWrist();
-
-                leftArmServo.setPosition(Constants.leftPivotServoIntakeUpPosition);
-                rightArmServo.setPosition(Constants.rightPivotServoIntakeUpPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action intakePreperation() {
-        return new IntakePreperation();
-    }
-
-    public class IntakingPosition implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!initialized) {
-                openClaw();
-                extendIntake();
-                lockWrist();
-
-                leftArmServo.setPosition(Constants.leftPivotServoIntakeDownPosition);
-                rightArmServo.setPosition(Constants.rightPivotServoIntakeDownPosition);
-                initialized = true;
-            }
-
-            return false;
-        }
-    }
-
-    public Action intakingPosition() {
-        return new IntakingPosition();
+    private void setClawState(ClawState clawState) {
+        this.clawState = clawState;
     }
 }
