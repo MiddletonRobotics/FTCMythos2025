@@ -26,15 +26,16 @@ public class Constants {
     /* Intake Subysystem Constants */
 
     public static final double IntakeClawClosedPosition = 0.0;
+    public static final double IntakeClawPartiallyOpenedPosition = 0.12;
     public static final double IntakeClawOpenedPosition = 0.23;
 
-    public static final double IntakeArmStorePosition = 0.0;
+    public static final double IntakeArmStorePosition = 0.15;
     public static final double IntakeArmTransferPosition = 0.0;
-    public static final double IntakeArmReadyPosition = 0.6;
-    public static final double IntakeArmIntakingPosition = 0.8;
+    public static final double IntakeArmReadyPosition = 0.65;
+    public static final double IntakeArmIntakingPosition = 0.81;
 
-    public static final double IntakeLinkageServoInPosition = 1.0;
-    public static final double IntakeLinkageServoOutPosition = 0.5;
+    public static final double IntakeLinkageServoInPosition = 0.9;
+    public static final double IntakeLinkageServoOutPosition = 0.6;
     public static final double IntakeLinkageServoTransferPosition = 1.0;
 
     public static final double IntakeWristRegularPosition = 0.66;

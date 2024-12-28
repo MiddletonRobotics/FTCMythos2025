@@ -71,6 +71,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public enum ClawState {
         OPEN_CLAW(Constants.IntakeClawOpenedPosition),
+        PARTIALLY_OPEN_CLAW(Constants.IntakeClawPartiallyOpenedPosition),
         CLOSE_CLAW(Constants.IntakeClawClosedPosition);
 
         private final double position;
