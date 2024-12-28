@@ -36,6 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public enum LiftState {
         RETRACTED(Constants.ViperRetractedPosition),
+        CLEARENCE(400),
         SPECIMAN_READY(Constants.ViperSpecimanReadyPosition),
         SPECIMAN_SCORE(Constants.ViperSpecimanScorePosition),
         LOW_GOAL(Constants.ViperLowGoalPosition),

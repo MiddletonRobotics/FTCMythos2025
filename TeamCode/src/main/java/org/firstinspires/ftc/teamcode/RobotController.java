@@ -17,6 +17,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.commands.IntakeSmapleThenRetract;
 import org.firstinspires.ftc.teamcode.commands.PrepareToIntake;
 import org.firstinspires.ftc.teamcode.commands.ScoreSpecimanThenRetract;
 import org.firstinspires.ftc.teamcode.commands.UninterruptableCommand;
@@ -43,7 +44,7 @@ public class RobotController extends CommandOpMode {
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton outtakeClaw, intakeClaw, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading, extendSlides;
+    private GamepadButton outtakeClaw, intakeClaw, intakeDown, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading, extendSlides;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -66,16 +67,19 @@ public class RobotController extends CommandOpMode {
         operatorController = new GamepadEx(gamepad2);
 
         extendSlides = new GamepadButton(driverController, GamepadKeys.Button.A);
+        autoTransfer = new GamepadButton(driverController, GamepadKeys.Button.B);
         resetHeading = new GamepadButton(driverController, GamepadKeys.Button.Y);
         outtakeClaw = new GamepadButton(driverController, GamepadKeys.Button.X);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
 
         intakeClaw = new GamepadButton(operatorController, GamepadKeys.Button.A);
+        intakeDown = new GamepadButton(driverController, GamepadKeys.Button.DPAD_DOWN);
         intakeSpeciman = new GamepadButton(operatorController, GamepadKeys.Button.Y);
-        sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
-        retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
+        sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
+        retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
 
+        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
         resetHeading.whenPressed(new InstantCommand((() -> drivetrain.resetHeading(imu)), drivetrain));
         outtakeClaw.whenPressed(
                 new InstantCommand((() -> elevator.manipulatorToPosition(
@@ -103,14 +107,20 @@ public class RobotController extends CommandOpMode {
                 )), intake)
         );
 
-        extendSlides.toggleWhenPressed(
-                new PrepareToIntake(intake), new InstantCommand((() -> intake.intakeToPosition(
-                        IntakeSubsystem.ExtensionState.STORED,
-                        IntakeSubsystem.ArmState.TRANSFER,
-                        IntakeSubsystem.WristState.NORMAL,
+        extendSlides.whenPressed(new PrepareToIntake(intake, elevator));
+        intakeDown.toggleWhenPressed(
+                new InstantCommand((() -> intake.intakeToPosition(
+                        intake.getExtensionState(),
+                        IntakeSubsystem.ArmState.INTAKING,
+                        intake.getWristState(),
+                        IntakeSubsystem.ClawState.OPEN_CLAW
+                )), intake), new InstantCommand((() -> intake.intakeToPosition(
+                        intake.getExtensionState(),
+                        IntakeSubsystem.ArmState.READY,
+                        intake.getWristState(),
                         IntakeSubsystem.ClawState.CLOSE_CLAW
-                )), intake)
-        );
+                )), intake));
+
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
