@@ -30,8 +30,8 @@ public class ScoreSpecimanThenRetract extends CommandBase {
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.SPECIMAN_SCORE);
         } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.75 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 1) {
             elevatorSubsystem.manipulatorToPosition(
-                    elevatorSubsystem.getArmState(),
-                    elevatorSubsystem.getWristState(),
+                    ElevatorSubsystem.ArmState.TRANSFER,
+                    ElevatorSubsystem.WristState.TRANSFER,
                     ElevatorSubsystem.ClawState.OPEN_CLAW
             );
         } else if (elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 1) {

@@ -10,7 +10,7 @@ public class Constants {
     public static final double ViperLowGoalPosition = 2200;
     public static final double ViperHighGoalPosition = 4000;
 
-    public static final double ElevatorArmTransferPosition = 0.05;
+    public static final double ElevatorArmTransferPosition = 0.0125;
     public static final double ElevatorArmIntakingPosition = 1.0;
     public static final double ElevatorArmBucketPosition = 0.5;
     public static final double ElevatorArmSpecimanPosition = 0.1;
@@ -34,10 +34,10 @@ public class Constants {
     public static final double IntakeArmIntakingPosition = 0.8;
 
     public static final double IntakeLinkageServoInPosition = 1.0;
-    public static final double IntakeLinkageServoOutPosition = 0.0;
-    public static final double IntakeLinkageServoTransferPosition = 0.0;
+    public static final double IntakeLinkageServoOutPosition = 0.5;
+    public static final double IntakeLinkageServoTransferPosition = 1.0;
 
-    public static final double IntakeWristRegularPosition = 0.89;
+    public static final double IntakeWristRegularPosition = 0.66;
     public static final double IntakeWristAngled30Position = 0.89;
     public static final double IntakeWristAngled60Position = 0.89;
     public static final double IntakeWristAngled90Position = 0.89;

@@ -17,6 +17,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.commands.PrepareToIntake;
 import org.firstinspires.ftc.teamcode.commands.ScoreSpecimanThenRetract;
 import org.firstinspires.ftc.teamcode.commands.UninterruptableCommand;
 
@@ -42,7 +43,7 @@ public class RobotController extends CommandOpMode {
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton outtakeClaw, intakeClaw, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading;
+    private GamepadButton outtakeClaw, intakeClaw, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading, extendSlides;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -64,6 +65,7 @@ public class RobotController extends CommandOpMode {
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
 
+        extendSlides = new GamepadButton(driverController, GamepadKeys.Button.A);
         resetHeading = new GamepadButton(driverController, GamepadKeys.Button.Y);
         outtakeClaw = new GamepadButton(driverController, GamepadKeys.Button.X);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
@@ -85,6 +87,29 @@ public class RobotController extends CommandOpMode {
                         elevator.getWristState(),
                         ElevatorSubsystem.ClawState.CLOSE_CLAW
                 )), elevator)
+        );
+
+        intakeClaw.whenPressed(
+                new InstantCommand((() -> intake.intakeToPosition(
+                        intake.getExtensionState(),
+                        intake.getArmState(),
+                        intake.getWristState(),
+                        IntakeSubsystem.ClawState.OPEN_CLAW
+                )), intake)).whenReleased(new InstantCommand((() -> intake.intakeToPosition(
+                        intake.getExtensionState(),
+                        intake.getArmState(),
+                        intake.getWristState(),
+                        IntakeSubsystem.ClawState.CLOSE_CLAW
+                )), intake)
+        );
+
+        extendSlides.toggleWhenPressed(
+                new PrepareToIntake(intake), new InstantCommand((() -> intake.intakeToPosition(
+                        IntakeSubsystem.ExtensionState.STORED,
+                        IntakeSubsystem.ArmState.TRANSFER,
+                        IntakeSubsystem.WristState.NORMAL,
+                        IntakeSubsystem.ClawState.CLOSE_CLAW
+                )), intake)
         );
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));

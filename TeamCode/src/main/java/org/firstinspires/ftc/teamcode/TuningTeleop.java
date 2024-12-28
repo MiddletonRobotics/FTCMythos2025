@@ -99,6 +99,14 @@ public class TuningTeleop extends OpMode {
         } else if (gamepad1.dpad_right) {
             leftIntakeArmServo.setPosition(1.0);
             rightIntakeArmServo.setPosition(1.0);
+        } else if (gamepad1.dpad_up) {
+            linkageServo.setPosition(0.0);
+        } else if (gamepad1.dpad_down) {
+            linkageServo.setPosition(1.0);
+        } else if (gamepad1.left_stick_button) {
+            wristIntakeServo.setPosition(0.0);
+        } else if (gamepad1.right_stick_button) {
+            wristIntakeServo.setPosition(0.66);
         }
 
 

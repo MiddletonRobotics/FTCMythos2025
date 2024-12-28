@@ -17,7 +17,7 @@ public class PrepareToIntake extends CommandBase {
     public void initialize() {
         intakeSubsystem.intakeToPosition(
                 IntakeSubsystem.ExtensionState.EXTENDED,
-                IntakeSubsystem.ArmState.READY,
+                intakeSubsystem.getArmState(),
                 IntakeSubsystem.WristState.NORMAL,
                 IntakeSubsystem.ClawState.CLOSE_CLAW
         );
@@ -26,7 +26,19 @@ public class PrepareToIntake extends CommandBase {
     }
 
     @Override
+    public void execute() {
+        if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 0.25) {
+            intakeSubsystem.intakeToPosition(
+                    intakeSubsystem.getExtensionState(),
+                    IntakeSubsystem.ArmState.READY,
+                    intakeSubsystem.getWristState(),
+                    IntakeSubsystem.ClawState.OPEN_CLAW
+            );
+        }
+    }
+
+    @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.5;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 0.75;
     }
 }
