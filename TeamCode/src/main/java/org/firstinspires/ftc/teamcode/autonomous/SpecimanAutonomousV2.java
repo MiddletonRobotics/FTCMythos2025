@@ -23,13 +23,13 @@ public class SpecimanAutonomousV2 extends CommandOpMode {
     public void initialize() {
         this.elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
         this.follower = new Follower(hardwareMap);
-        this.follower.setStartingPose(new Pose(0.0, 0.0, 0.0));
+        this.follower.setStartingPose(new Pose(0.5, 73.0, 0.0));
         this.chain = Paths.fiveSpecimanAuto;
 
         schedule(
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
-                        Commands.followPath(follower, chain.getPath(0)).alongWith(
+                        Commands.followPath(follower, chain.getPath(1)).alongWith(
                                 Commands.prepareSpeciman(elevatorSubsystem)
                         ),
                         Commands.sleep(250).andThen(

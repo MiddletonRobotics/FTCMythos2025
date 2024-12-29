@@ -72,28 +72,6 @@ public class SpecimanAutonomous extends OpMode {
     public void buildPaths() {
         builder = new PathBuilder();
 
-        scorePreload = new Path(new BezierCurve(
-                new Point(startPose),
-                new Point(scorePreloadPose)
-        ));
-
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading());
-
-        pushPickup1 = follower.pathBuilder()
-                .addPath(new BezierCurve(
-                        new Point(scorePreloadPose),
-                        new Point(1.000, 38.000, Point.CARTESIAN),
-                        new Point(58.500, 46.000, Point.CARTESIAN)
-                ))
-                .setLinearHeadingInterpolation(scorePreloadPose.getHeading(), 0)
-                .build();
-
-        park = new Path(new BezierCurve(new Point(31.000, 77.000, Point.CARTESIAN), new Point(7.000, 45.000, Point.CARTESIAN)));
-        park.setLinearHeadingInterpolation(0, 0);
-    }
-
-        /*
-
         builder
                 .addPath(
                         // Line 1
@@ -211,6 +189,6 @@ public class SpecimanAutonomous extends OpMode {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0));
+    }
 
-                */
 }
