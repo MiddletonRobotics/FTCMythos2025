@@ -30,14 +30,14 @@ public class IntakeSmapleThenRetract extends CommandBase {
 
     @Override
     public void execute() {
-        if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.25 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 0.5) {
+        if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.125 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 0.375) {
             intakeSubsystem.intakeToPosition(
                     intakeSubsystem.getExtensionState(),
                     IntakeSubsystem.ArmState.TRANSFER,
                     IntakeSubsystem.WristState.NORMAL,
                     intakeSubsystem.getClawState()
             );
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.5 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.5) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.375 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.5) {
             intakeSubsystem.intakeToPosition(
                     IntakeSubsystem.ExtensionState.STORED,
                     intakeSubsystem.getArmState(),
