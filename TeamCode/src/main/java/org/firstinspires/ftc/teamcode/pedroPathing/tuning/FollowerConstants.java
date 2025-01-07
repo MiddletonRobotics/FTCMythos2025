@@ -44,9 +44,9 @@ public class FollowerConstants {
 
     // Translational PIDF coefficients (don't use integral)
     public static CustomPIDFCoefficients translationalPIDFCoefficients = new CustomPIDFCoefficients(
-             0.1,
+             0.08,
             0,
-            0.0023,
+            0.001,
             0);
 
     // Translational Integral
@@ -62,9 +62,9 @@ public class FollowerConstants {
 
     // Heading error PIDF coefficients
     public static CustomPIDFCoefficients headingPIDFCoefficients = new CustomPIDFCoefficients(
-            1.918,
+            2, // 1.918
             0,
-            0.08,
+            0.02,  // 0.08
             0);
 
     // Feed forward constant added on to the heading PIDF
@@ -73,19 +73,19 @@ public class FollowerConstants {
 
     // Drive PIDF coefficients
     public static CustomFilteredPIDFCoefficients drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(
-            0.012,
+            0.013,
             0,
-            0.0005,
+            0.00051,
             0.6,
             0);
 
     // Feed forward constant added on to the drive PIDF
-    public static double drivePIDFFeedForward = 0.01;
+    public static double drivePIDFFeedForward = 0.02;
 
     // Kalman filter parameters for the drive error Kalman filter
     public static KalmanFilterParameters driveKalmanFilterParameters = new KalmanFilterParameters(
             6,
-            1);
+            0.8);
 
 
     // Mass of robot in kilograms
@@ -131,12 +131,12 @@ public class FollowerConstants {
     // When the t-value of the closest point to the robot on the Path is greater than this value,
     // then the Path is considered at its end.
     // This can be custom set for each Path.
-    public static double pathEndTValueConstraint = 0.995; // 0.95
+    public static double pathEndTValueConstraint = 0.95; // 0.95
 
     // When the Path is considered at its end parametrically, then the Follower has this many
     // milliseconds to further correct by default.
     // This can be custom set for each Path.
-    public static double pathEndTimeoutConstraint = 500; // 50
+    public static double pathEndTimeoutConstraint = 50; // 50
 
     // This is how many steps the BezierCurve class uses to approximate the length of a BezierCurve.
     public static int APPROXIMATION_STEPS = 1000;
@@ -161,19 +161,19 @@ public class FollowerConstants {
     // These activate / deactivate the secondary PIDs. These take over at errors under a set limit for
     // the translational, heading, and drive PIDs.
     public static boolean useSecondaryTranslationalPID = true;
-    public static boolean useSecondaryHeadingPID = false;
-    public static boolean useSecondaryDrivePID = true;
+    public static boolean useSecondaryHeadingPID = true;
+    public static boolean useSecondaryDrivePID = false;
 
 
     // the limit at which the translational PIDF switches between the main and secondary translational PIDFs,
     // if the secondary PID is active
-    public static double translationalPIDFSwitch = 3;
+    public static double translationalPIDFSwitch = 6; // 6
 
     // Secondary translational PIDF coefficients (don't use integral)
     public static CustomPIDFCoefficients secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(
-            0.31975,
+            0.16, // 0.16
             0,
-            0.030137,
+            0.015, // 0.015
             0);
 
     // Secondary translational Integral value
@@ -184,7 +184,7 @@ public class FollowerConstants {
             0);
 
     // Feed forward constant added on to the small translational PIDF
-    public static double secondaryTranslationalPIDFFeedForward = 0.015;
+    public static double secondaryTranslationalPIDFFeedForward = 0.02;
 
 
     // the limit at which the heading PIDF switches between the main and secondary heading PIDFs
@@ -192,9 +192,9 @@ public class FollowerConstants {
 
     // Secondary heading error PIDF coefficients
     public static CustomPIDFCoefficients secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(
-            3,
+            1.25,
             0,
-            0.1325,
+            0.15,
             0);
 
     // Feed forward constant added on to the secondary heading PIDF

@@ -33,4 +33,5 @@ public class Commands {
     public static Command retractElevator(ElevatorSubsystem elevatorSubsystem) { return new RetractElevator(elevatorSubsystem); }
 
     public static Command intakeFromWall(ElevatorSubsystem elevatorSubsystem) { return new IntakeFromWall(elevatorSubsystem); }
+    public static Command closeClaw(ElevatorSubsystem elevatorSubsystem) { return  new CloseClaw(elevatorSubsystem); }
 }

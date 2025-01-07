@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -27,14 +28,25 @@ public class SpecimanAutonomousV2 extends CommandOpMode {
         this.chain = Paths.fiveSpecimanAuto;
 
         schedule(
+                new RunCommand(follower::update),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
-                        Commands.followPath(follower, chain.getPath(1)).alongWith(
+                        Commands.followPath(follower, chain.getPath(0)).alongWith(
                                 Commands.prepareSpeciman(elevatorSubsystem)
                         ),
-                        Commands.sleep(250).andThen(
+                        Commands.sleep(150).andThen(
                                 Commands.scoreSpecimanThenRetract(elevatorSubsystem)
-                        )
+                        ),
+                        Commands.followPath(follower, chain.getPath(1)),
+                        Commands.followPath(follower, chain.getPath(2)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
+                        Commands.followPath(follower, chain.getPath(3)),
+                        Commands.sleep(500).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(200)),
+                        Commands.followPath(follower, chain.getPath(4)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        Commands.sleep(150).andThen(
+                                Commands.scoreSpecimanThenRetract(elevatorSubsystem)
+                        ),
+                        Commands.followPath(follower, chain.getPath(5)),
+                        Commands.followPath(follower, chain.getPath(6))
                 )
         );
     }

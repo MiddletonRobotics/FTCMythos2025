@@ -41,6 +41,6 @@ public class ScoreSpecimanThenRetract extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 3;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 1.85;
     }
 }

@@ -5,23 +5,23 @@ public class Constants {
     public static final double viperConstantVelocity = 0.8;
 
     public static final double ViperRetractedPosition = 0;
-    public static final double ViperSpecimanReadyPosition = 1200;
-    public static final double ViperSpecimanScorePosition = 2150;
+    public static final double ViperSpecimanReadyPosition = 1000;
+    public static final double ViperSpecimanScorePosition = 2050;
     public static final double ViperLowGoalPosition = 2200;
     public static final double ViperHighGoalPosition = 4000;
 
     public static final double ElevatorArmTransferPosition = 0.0125;
     public static final double ElevatorArmIntakingPosition = 1.0;
     public static final double ElevatorArmBucketPosition = 0.5;
-    public static final double ElevatorArmSpecimanPosition = 0.1;
+    public static final double ElevatorArmSpecimanPosition = 0.2;
 
     public static final double ElevatorWristTransferPosition = 0.75;
-    public static final double ElevatorWristSpecimanPosition = 0.4;
+    public static final double ElevatorWristSpecimanPosition = 0.43;
     public static final double ElevatorWristBucketPosition = 0.2;
-    public static final double ElevatorWristIntakingPosition = 0.53;
+    public static final double ElevatorWristIntakingPosition = 0.42;
 
-    public static final double ElevatorClawOpenPosition = 0.0;
-    public static final double ElevatorClawClosedPosition = 1.0;
+    public static final double ElevatorClawOpenPosition = 0.7;
+    public static final double ElevatorClawClosedPosition = 0.96;
 
     /* Intake Subysystem Constants */
 
@@ -34,14 +34,14 @@ public class Constants {
     public static final double IntakeArmReadyPosition = 0.65;
     public static final double IntakeArmIntakingPosition = 0.81;
 
-    public static final double IntakeLinkageServoInPosition = 0.9;
-    public static final double IntakeLinkageServoOutPosition = 0.6;
+    public static final double IntakeLinkageServoInPosition = 1.0;
+    public static final double IntakeLinkageServoOutPosition = 0.75;
     public static final double IntakeLinkageServoTransferPosition = 1.0;
 
     public static final double IntakeWristRegularPosition = 0.66;
-    public static final double IntakeWristAngled30Position = 0.89;
-    public static final double IntakeWristAngled60Position = 0.89;
-    public static final double IntakeWristAngled90Position = 0.89;
+    public static final double IntakeWristAngled30Position = 0.554;
+    public static final double IntakeWristAngled60Position = 0.439;
+    public static final double IntakeWristAngled90Position = 0.33;
 
 
 

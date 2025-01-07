@@ -22,13 +22,7 @@ public class SpecimanAutonomous extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
-    private int pathState;
-
-    private Path scorePreload, park;
-    private PathChain pushPickup1, pushPickup2, pushPickup3, scorePickup1, scorePickup2, scorePickup3, scorePickup4;
-
     private final Pose startPose = new Pose(0.5, 73, Math.toRadians(0));
-    private final Pose scorePreloadPose = new Pose(28, 72, Math.toRadians(0));
 
     private ElevatorSubsystem elevator;
     private IntakeSubsystem intake;
@@ -62,11 +56,6 @@ public class SpecimanAutonomous extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         follower.followPath(builder.build());
-    }
-
-    public void setPathState(int pState) {
-        pathState = pState;
-        pathTimer.resetTimer();
     }
 
     public void buildPaths() {

@@ -44,7 +44,7 @@ public class RobotController extends CommandOpMode {
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton outtakeClaw, intakeClaw, intakeDown, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading, extendSlides;
+    private GamepadButton outtakeClaw, intakeClaw, intakeDown, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, resetHeading, extendSlides;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -70,11 +70,13 @@ public class RobotController extends CommandOpMode {
         autoTransfer = new GamepadButton(driverController, GamepadKeys.Button.B);
         resetHeading = new GamepadButton(driverController, GamepadKeys.Button.Y);
         outtakeClaw = new GamepadButton(driverController, GamepadKeys.Button.X);
+        intakeRotate = new GamepadButton(driverController, GamepadKeys.Button.DPAD_LEFT);
+        intakeRotate2 = new GamepadButton(driverController, GamepadKeys.Button.DPAD_RIGHT);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
 
         intakeClaw = new GamepadButton(operatorController, GamepadKeys.Button.A);
-        intakeDown = new GamepadButton(driverController, GamepadKeys.Button.DPAD_DOWN);
+        intakeDown = new GamepadButton(operatorController, GamepadKeys.Button.X);
         intakeSpeciman = new GamepadButton(operatorController, GamepadKeys.Button.Y);
         sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
         retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
@@ -121,6 +123,29 @@ public class RobotController extends CommandOpMode {
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 )), intake));
 
+        intakeRotate.toggleWhenPressed(new InstantCommand((() -> intake.intakeToPosition(
+                intake.getExtensionState(),
+                intake.getArmState(),
+                IntakeSubsystem.WristState.ANGLED_90,
+                intake.getClawState()
+        )), intake), new InstantCommand((() -> intake.intakeToPosition(
+                intake.getExtensionState(),
+                intake.getArmState(),
+                IntakeSubsystem.WristState.NORMAL,
+                intake.getClawState()
+        ))));
+
+        intakeRotate2.toggleWhenPressed(new InstantCommand((() -> intake.intakeToPosition(
+                intake.getExtensionState(),
+                intake.getArmState(),
+                IntakeSubsystem.WristState.ANGLED_30,
+                intake.getClawState()
+        )), intake), new InstantCommand((() -> intake.intakeToPosition(
+                intake.getExtensionState(),
+                intake.getArmState(),
+                IntakeSubsystem.WristState.ANGLED_60,
+                intake.getClawState()
+        ))));
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
