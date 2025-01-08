@@ -40,13 +40,34 @@ public class SpecimanAutonomousV2 extends CommandOpMode {
                         Commands.followPath(follower, chain.getPath(1)),
                         Commands.followPath(follower, chain.getPath(2)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
                         Commands.followPath(follower, chain.getPath(3)),
-                        Commands.sleep(500).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(200)),
+                        Commands.sleep(300).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(150)),
                         Commands.followPath(follower, chain.getPath(4)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
-                        Commands.sleep(150).andThen(
+                        Commands.sleep(100).andThen(
+                                Commands.scoreSpecimanThenRetract(elevatorSubsystem)
+                        ).alongWith(Commands.sleep(1200).andThen(Commands.followPath(follower, chain.getPath(5)))),
+                        Commands.followPath(follower, chain.getPath(6)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
+                        Commands.followPath(follower, chain.getPath(7)),
+                        Commands.sleep(300).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(150)),
+                        Commands.followPath(follower, chain.getPath(8)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        Commands.sleep(100).andThen(
                                 Commands.scoreSpecimanThenRetract(elevatorSubsystem)
                         ),
-                        Commands.followPath(follower, chain.getPath(5)),
-                        Commands.followPath(follower, chain.getPath(6))
+                        Commands.followPath(follower, chain.getPath(9)),
+                        Commands.followPath(follower, chain.getPath(10)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
+                        Commands.followPath(follower, chain.getPath(11)),
+                        Commands.sleep(300).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(150)),
+                        Commands.followPath(follower, chain.getPath(12)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        Commands.sleep(100).andThen(
+                                Commands.scoreSpecimanThenRetract(elevatorSubsystem)
+                        ),
+                        Commands.intakeFromWall(elevatorSubsystem),
+                        Commands.followPath(follower, chain.getPath(13)),
+                        Commands.sleep(300).andThen(Commands.closeClaw(elevatorSubsystem)).andThen(Commands.sleep(150)),
+                        Commands.followPath(follower, chain.getPath(14)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        Commands.sleep(100).andThen(
+                                Commands.scoreSpecimanThenRetract(elevatorSubsystem),
+                        Commands.followPath(follower, chain.getPath(15))
+                        )
                 )
         );
     }

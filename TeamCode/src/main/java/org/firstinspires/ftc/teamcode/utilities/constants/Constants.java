@@ -5,20 +5,20 @@ public class Constants {
     public static final double viperConstantVelocity = 0.8;
 
     public static final double ViperRetractedPosition = 0;
-    public static final double ViperSpecimanReadyPosition = 1000;
-    public static final double ViperSpecimanScorePosition = 2050;
+    public static final double ViperSpecimanReadyPosition = 900;
+    public static final double ViperSpecimanScorePosition = 1900;
     public static final double ViperLowGoalPosition = 2200;
     public static final double ViperHighGoalPosition = 4000;
 
-    public static final double ElevatorArmTransferPosition = 0.0125;
+    public static final double ElevatorArmTransferPosition = 0.0;
     public static final double ElevatorArmIntakingPosition = 1.0;
     public static final double ElevatorArmBucketPosition = 0.5;
     public static final double ElevatorArmSpecimanPosition = 0.2;
 
     public static final double ElevatorWristTransferPosition = 0.75;
-    public static final double ElevatorWristSpecimanPosition = 0.43;
+    public static final double ElevatorWristSpecimanPosition = 0.3;
     public static final double ElevatorWristBucketPosition = 0.2;
-    public static final double ElevatorWristIntakingPosition = 0.42;
+    public static final double ElevatorWristIntakingPosition = 0.35;
 
     public static final double ElevatorClawOpenPosition = 0.7;
     public static final double ElevatorClawClosedPosition = 0.96;
