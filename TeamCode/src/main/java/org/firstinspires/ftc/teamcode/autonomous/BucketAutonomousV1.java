@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-@Autonomous(name="4BucketAuto", group = "Depricated")
+@Autonomous(name="W-4Bucket", group = "Working")
 public class BucketAutonomousV1 extends CommandOpMode {
     public PathChain chain;
     public Follower follower;

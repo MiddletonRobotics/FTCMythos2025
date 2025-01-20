@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-@Autonomous(name="5SpecAuto", group = "Working")
+@Autonomous(name="W-5SpecPreload", group = "Working")
 public class SpecimanAutonomousV5 extends CommandOpMode {
     public PathChain chain;
     public Follower follower;
