@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final Servo linkageServo, leftArmServo, rightArmServo, wristServo, grabberServo;
+    private final Servo linkageServo, linkageServo2, leftArmServo, rightArmServo, wristServo, grabberServo;
     private Telemetry telemetry;
 
     public Timer intakeTimer = new Timer();
@@ -92,12 +92,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public IntakeSubsystem(HardwareMap aHardwareMap, Telemetry telemetry) {
         linkageServo = aHardwareMap.get(Servo.class, "linkageServo");
+        linkageServo2 = aHardwareMap.get(Servo.class, "linkageServo2");
         leftArmServo = aHardwareMap.get(Servo.class, "leftPivotServo");
         rightArmServo = aHardwareMap.get(Servo.class, "rightPivotServo");
         wristServo = aHardwareMap.get(Servo.class, "intakeArm");
         grabberServo = aHardwareMap.get(Servo.class, "intakeClaw");
 
         linkageServo.setDirection(Servo.Direction.FORWARD);
+        linkageServo2.setDirection(Servo.Direction.REVERSE);
         leftArmServo.setDirection(Servo.Direction.REVERSE);
         rightArmServo.setDirection(Servo.Direction.FORWARD);
         wristServo.setDirection(Servo.Direction.FORWARD);
@@ -122,6 +124,7 @@ public class IntakeSubsystem extends SubsystemBase {
         setClawState(clawState);
 
         linkageServo.setPosition(this.extensionState.getPosition());
+        linkageServo2.setPosition(this.extensionState.getPosition());
         leftArmServo.setPosition(this.armState.getPosition());
         rightArmServo.setPosition(this.armState.getPosition());
         wristServo.setPosition(this.wristState.getPosition());

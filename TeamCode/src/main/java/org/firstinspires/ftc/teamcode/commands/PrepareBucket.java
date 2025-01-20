@@ -15,6 +15,7 @@ public class PrepareBucket extends CommandBase {
     @Override
     public void initialize() {
         elevatorSubsystem.elevatorTimer.resetTimer();
+        elevatorSubsystem.manipulatorToPosition(ElevatorSubsystem.ArmState.TRANSFER, ElevatorSubsystem.WristState.TRANSFER, ElevatorSubsystem.ClawState.CLOSE_CLAW);
     }
 
     @Override

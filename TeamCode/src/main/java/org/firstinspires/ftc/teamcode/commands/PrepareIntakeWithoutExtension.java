@@ -5,12 +5,12 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-public class PrepareToIntake extends CommandBase {
+public class PrepareIntakeWithoutExtension extends CommandBase {
     private final IntakeSubsystem intakeSubsystem;
     private final ElevatorSubsystem elevatorSubsystem;
     boolean elevatorWasMoved;
 
-    public PrepareToIntake(IntakeSubsystem intakeSubsystem, ElevatorSubsystem elevatorSubsystem) {
+    public PrepareIntakeWithoutExtension(IntakeSubsystem intakeSubsystem, ElevatorSubsystem elevatorSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.elevatorSubsystem = elevatorSubsystem;
 
@@ -45,23 +45,16 @@ public class PrepareToIntake extends CommandBase {
     @Override
     public void execute() {
         if(elevatorWasMoved) {
-            if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 0.75) {
+            if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1) {
                 elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.CLEARENCE);
 
                 intakeSubsystem.intakeToPosition(
-                        IntakeSubsystem.ExtensionState.EXTENDED,
-                        intakeSubsystem.getArmState(),
+                        IntakeSubsystem.ExtensionState.STORED,
+                        IntakeSubsystem.ArmState.READY,
                         IntakeSubsystem.WristState.NORMAL,
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 );
-            } else if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 0.75) {
-                intakeSubsystem.intakeToPosition(
-                        intakeSubsystem.getExtensionState(),
-                        IntakeSubsystem.ArmState.READY,
-                        intakeSubsystem.getWristState(),
-                        IntakeSubsystem.ClawState.CLOSE_CLAW
-                );
-
+            } else if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1) {
                 elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
             }
         } else {
@@ -78,6 +71,6 @@ public class PrepareToIntake extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.5;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1;
     }
 }

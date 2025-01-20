@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final PIDFController elevatorController;
     private Telemetry telemetry;
     private double targetPosition;
-    DcMotorEx viperMotor;
+    public DcMotorEx viperMotor;
 
     public Timer elevatorTimer = new Timer();
 
@@ -91,6 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public enum ClawState {
         OPEN_CLAW(Constants.ElevatorClawOpenPosition),
+        FULLY_CLOSE_CLAW(Constants.ElevatorClawClosedFullyPosition),
         CLOSE_CLAW(Constants.ElevatorClawClosedPosition);
 
         private final double position;

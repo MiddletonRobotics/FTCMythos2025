@@ -5,10 +5,10 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
-public class ScoreSpecimanThenRetract extends CommandBase {
+public class ScoreSpeciman extends CommandBase {
     private final ElevatorSubsystem elevatorSubsystem;
 
-    public ScoreSpecimanThenRetract(ElevatorSubsystem elevatorSubsystem) {
+    public ScoreSpeciman(ElevatorSubsystem elevatorSubsystem) {
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(elevatorSubsystem);
     }
@@ -26,21 +26,19 @@ public class ScoreSpecimanThenRetract extends CommandBase {
 
     @Override
     public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.6) {
+        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.4) {
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.SPECIMAN_SCORE);
-        } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.6 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.8) {
+        } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.4 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.45) {
             elevatorSubsystem.manipulatorToPosition(
                     ElevatorSubsystem.ArmState.TRANSFER,
                     ElevatorSubsystem.WristState.TRANSFER,
                     ElevatorSubsystem.ClawState.OPEN_CLAW
             );
-        } else if (elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.8) {
-            elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 1.85;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 0.45;
     }
 }

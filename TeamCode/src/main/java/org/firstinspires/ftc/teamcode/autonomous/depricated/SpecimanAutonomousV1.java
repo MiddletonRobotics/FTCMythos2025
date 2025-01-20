@@ -1,12 +1,8 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.depricated;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 @Config
 @Autonomous(name = "AutonomousCfg")
-public class ConfigurableAutonomous extends LinearOpMode {
+public class SpecimanAutonomousV1 extends LinearOpMode {
     /*
     public class Outtake {
         private Servo grabberServo, wristServo, leftArmServo, rightArmServo;

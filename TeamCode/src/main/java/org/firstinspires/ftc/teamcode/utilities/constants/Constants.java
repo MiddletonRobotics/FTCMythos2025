@@ -2,37 +2,38 @@ package org.firstinspires.ftc.teamcode.utilities.constants;
 
 public class Constants {
     public static final String ViperMotorID = "viperMotor";
-    public static final double viperConstantVelocity = 0.8;
+    public static final double viperConstantVelocity = 0.95;
 
     public static final double ViperRetractedPosition = 0;
-    public static final double ViperSpecimanReadyPosition = 900;
+    public static final double ViperSpecimanReadyPosition = 1000;
     public static final double ViperSpecimanScorePosition = 1900;
-    public static final double ViperLowGoalPosition = 2200;
-    public static final double ViperHighGoalPosition = 4000;
+    public static final double ViperLowGoalPosition = 1000;
+    public static final double ViperHighGoalPosition = 3100;
 
-    public static final double ElevatorArmTransferPosition = 0.0;
-    public static final double ElevatorArmIntakingPosition = 1.0;
+    public static final double ElevatorArmTransferPosition = 0.03;
+    public static final double ElevatorArmIntakingPosition = 0.96;
     public static final double ElevatorArmBucketPosition = 0.5;
-    public static final double ElevatorArmSpecimanPosition = 0.2;
+    public static final double ElevatorArmSpecimanPosition = 0.15;
 
-    public static final double ElevatorWristTransferPosition = 0.75;
-    public static final double ElevatorWristSpecimanPosition = 0.3;
+    public static final double ElevatorWristTransferPosition = 0.85;
+    public static final double ElevatorWristSpecimanPosition = 0.45;
     public static final double ElevatorWristBucketPosition = 0.2;
-    public static final double ElevatorWristIntakingPosition = 0.35;
+    public static final double ElevatorWristIntakingPosition = 0.5;
 
     public static final double ElevatorClawOpenPosition = 0.7;
     public static final double ElevatorClawClosedPosition = 0.96;
+    public static final double ElevatorClawClosedFullyPosition = 1;
 
     /* Intake Subysystem Constants */
 
     public static final double IntakeClawClosedPosition = 0.0;
     public static final double IntakeClawPartiallyOpenedPosition = 0.12;
-    public static final double IntakeClawOpenedPosition = 0.23;
+    public static final double IntakeClawOpenedPosition = 0.25;
 
     public static final double IntakeArmStorePosition = 0.15;
     public static final double IntakeArmTransferPosition = 0.0;
     public static final double IntakeArmReadyPosition = 0.65;
-    public static final double IntakeArmIntakingPosition = 0.81;
+    public static final double IntakeArmIntakingPosition = 0.83;
 
     public static final double IntakeLinkageServoInPosition = 1.0;
     public static final double IntakeLinkageServoOutPosition = 0.75;
