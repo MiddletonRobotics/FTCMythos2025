@@ -28,14 +28,60 @@ public class SpecimanAutonomousV6 extends CommandOpMode {
         this.elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
         this.intakeSubsystem = new IntakeSubsystem(hardwareMap, telemetry);
         this.follower = new Follower(hardwareMap);
-        this.follower.setStartingPose(new Pose(0.5, 73.0, 0.0));
-        this.chain = Paths.fiveSpecimanAutoRenewed;
+        this.follower.setStartingPose(new Pose(0.5, 66.0, 0.0));
+        this.chain = Paths.fiveSpecimanNoPreload;
 
         schedule(
                 new RunCommand(follower::update),
                 new SequentialCommandGroup(
-
+                        new WaitUntilCommand(this::opModeIsActive),
+                        Commands.intakeIn(intakeSubsystem),
+                        Commands.fastPath(follower, chain.getPath(0)),
+                        Commands.fastPath(follower, chain.getPath(1)),
+                        Commands.fastPath(follower, chain.getPath(2)),
+                        Commands.fastPath(follower, chain.getPath(3)),
+                        Commands.fastPath(follower, chain.getPath(4)),
+                        Commands.fastPath(follower, chain.getPath(5)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
+                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(6)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        (Commands.scoreSpeciman(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(7)).alongWith(Commands.retractThenIntake(elevatorSubsystem)),
+                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(8)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        (Commands.scoreSpeciman(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(9)).alongWith(Commands.retractThenIntake(elevatorSubsystem)),
+                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(10)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        (Commands.scoreSpeciman(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(11)).alongWith(Commands.retractThenIntake(elevatorSubsystem)),
+                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(12)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        (Commands.scoreSpeciman(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(13)).alongWith(Commands.retractThenIntake(elevatorSubsystem)),
+                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(14)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
+                        (Commands.scoreSpeciman(elevatorSubsystem)),
+                        Commands.fastPath(follower, chain.getPath(15)).alongWith(Commands.retractElevator(elevatorSubsystem))
                 )
         );
+    }
+    @Override
+    public void runOpMode() {
+        initialize();
+
+        while (!opModeIsActive()) {
+
+        }
+
+        waitForStart();
+
+        // run the scheduler
+        while (!isStopRequested() && opModeIsActive()) {
+            run();
+            telemetry.addData("Viper Motor Power", elevatorSubsystem.viperMotor.getPower());
+            telemetry.addData("Follower Busy", follower.isBusy() );
+        }
+
+        reset();
     }
 }
