@@ -50,14 +50,14 @@ public class FiveSpecimanNoPreload {
                         // Line 6
                         new BezierLine(
                                 new Point(5.000, 27.000, Point.CARTESIAN),
-                                new Point(50.000, 23.000, Point.CARTESIAN)
+                                new Point(50.000, 24.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 7
                         new BezierCurve(
-                                new Point(50.000, 23.000, Point.CARTESIAN),
+                                new Point(50.000, 24.000, Point.CARTESIAN),
                                 new Point(68.000, 18.000, Point.CARTESIAN),
                                 new Point(0.000, 21.000, Point.CARTESIAN)
                         )
