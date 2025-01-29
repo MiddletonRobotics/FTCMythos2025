@@ -37,7 +37,7 @@ public class IntakeSmapleThenRetract extends CommandBase {
                     IntakeSubsystem.WristState.NORMAL,
                     intakeSubsystem.getClawState()
             );
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.375 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.5) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 0.375 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1) {
             intakeSubsystem.intakeToPosition(
                     IntakeSubsystem.ExtensionState.STORED,
                     intakeSubsystem.getArmState(),
@@ -46,14 +46,14 @@ public class IntakeSmapleThenRetract extends CommandBase {
             );
 
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.CLEARENCE);
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1.5 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 2.25) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.3) {
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
             elevatorSubsystem.manipulatorToPosition(
                     ElevatorSubsystem.ArmState.TRANSFER,
                     ElevatorSubsystem.WristState.TRANSFER,
                     ElevatorSubsystem.ClawState.OPEN_CLAW
             );
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 2.25) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1.3) {
             elevatorSubsystem.manipulatorToPosition(
                     elevatorSubsystem.getArmState(),
                     elevatorSubsystem.getWristState(),
@@ -71,6 +71,6 @@ public class IntakeSmapleThenRetract extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 2.5;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.5;
     }
 }

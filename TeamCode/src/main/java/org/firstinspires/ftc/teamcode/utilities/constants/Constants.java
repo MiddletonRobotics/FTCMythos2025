@@ -33,7 +33,7 @@ public class Constants {
     public static final double IntakeArmStorePosition = 0.15;
     public static final double IntakeArmTransferPosition = 0.0;
     public static final double IntakeArmReadyPosition = 0.65;
-    public static final double IntakeArmIntakingPosition = 0.83;
+    public static final double IntakeArmIntakingPosition = 0.82;
 
     public static final double IntakeLinkageServoInPosition = 1.0;
     public static final double IntakeLinkageServoOutPosition = 0.75;
