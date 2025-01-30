@@ -4,10 +4,10 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 
-public class ScoreBucketThenRetract extends CommandBase {
+public class ScoreBucket extends CommandBase {
     private final ElevatorSubsystem elevatorSubsystem;
 
-    public ScoreBucketThenRetract(ElevatorSubsystem elevatorSubsystem) {
+    public ScoreBucket(ElevatorSubsystem elevatorSubsystem) {
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(elevatorSubsystem);
     }
@@ -31,13 +31,11 @@ public class ScoreBucketThenRetract extends CommandBase {
                     ElevatorSubsystem.WristState.TRANSFER,
                     ElevatorSubsystem.ClawState.OPEN_CLAW
             );
-        } else if (elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.32) {
-            elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 0.35;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 0.47;
     }
 }

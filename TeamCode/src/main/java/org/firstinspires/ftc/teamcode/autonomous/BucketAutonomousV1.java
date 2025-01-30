@@ -52,7 +52,14 @@ public class BucketAutonomousV1 extends CommandOpMode {
                         Commands.IntakeDown(intakeSubsystem),
                         Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(6)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
-                        Commands.sleep(100).andThen(Commands.scoreBucketThenRetract(elevatorSubsystem).alongWith(Commands.followPath(follower, chain.getPath(7))))
+                        Commands.sleep(250).andThen(Commands.scoreBucketThenRetract(elevatorSubsystem)),
+                        Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(7))),
+                        Commands.RotateIntakeToPosition(intakeSubsystem),
+                        Commands.sleep(50).andThen(Commands.IntakeDown(intakeSubsystem)),
+                        Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
+                        Commands.followPath(follower, chain.getPath(8)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
+                        (Commands.scoreBucketThenRetract(elevatorSubsystem)),
+                        Commands.sleep(3000).andThen(Commands.followPath(follower,chain.getPath(9)))
                 )
         );
     }

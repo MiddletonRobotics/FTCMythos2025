@@ -39,14 +39,14 @@ public class IntakeTransferWithoutRetraction extends CommandBase {
             );
 
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.CLEARENCE);
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.75) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1 && intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1.1) {
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
             elevatorSubsystem.manipulatorToPosition(
                     ElevatorSubsystem.ArmState.TRANSFER,
                     ElevatorSubsystem.WristState.TRANSFER,
                     ElevatorSubsystem.ClawState.OPEN_CLAW
             );
-        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1.75) {
+        } else if (intakeSubsystem.intakeTimer.getElapsedTimeSeconds() >= 1.1) {
             elevatorSubsystem.manipulatorToPosition(
                     elevatorSubsystem.getArmState(),
                     elevatorSubsystem.getWristState(),
@@ -64,6 +64,6 @@ public class IntakeTransferWithoutRetraction extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.875;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.2;
     }
 }

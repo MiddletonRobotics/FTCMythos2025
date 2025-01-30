@@ -71,6 +71,6 @@ public class IntakeSmapleThenRetract extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.5;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1.4;
     }
 }

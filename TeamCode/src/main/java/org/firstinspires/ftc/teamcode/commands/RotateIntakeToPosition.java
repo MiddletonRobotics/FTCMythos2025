@@ -15,7 +15,7 @@ public class RotateIntakeToPosition extends CommandBase {
 
     @Override
     public void initialize() {
-        intakeSubsystem.intakeToPosition(intakeSubsystem.getExtensionState(), intakeSubsystem.getArmState(), IntakeSubsystem.WristState.ANGLED_30, intakeSubsystem.getClawState());
+        intakeSubsystem.intakeToPosition(intakeSubsystem.getExtensionState(), intakeSubsystem.getArmState(), IntakeSubsystem.WristState.ANGLED_90, intakeSubsystem.getClawState());
         intakeSubsystem.intakeTimer.resetTimer();
     }
 

@@ -23,14 +23,14 @@ public class FourBucketAuto {
                         // Line 2
                         new BezierLine(
                                 new Point(4.000, 126.000, Point.CARTESIAN),
-                                new Point(24.500, 120.500, Point.CARTESIAN)
+                                new Point(25.500, 121.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 3
                         new BezierLine(
-                                new Point(24.500, 120.500, Point.CARTESIAN),
+                                new Point(25.500, 121.000, Point.CARTESIAN),
                                 new Point(6.500, 129.000, Point.CARTESIAN)
                         )
                 )
@@ -39,14 +39,14 @@ public class FourBucketAuto {
                         // Line 4
                         new BezierLine(
                                 new Point(6.500, 129.000, Point.CARTESIAN),
-                                new Point(26.000, 129.500, Point.CARTESIAN)
+                                new Point(25.500, 130.100, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 5
                         new BezierLine(
-                                new Point(26.000, 129.500, Point.CARTESIAN),
+                                new Point(25.500, 130.100, Point.CARTESIAN),
                                 new Point(6.000, 128.000, Point.CARTESIAN)
                         )
                 )
@@ -55,27 +55,42 @@ public class FourBucketAuto {
                         // Line 6
                         new BezierLine(
                                 new Point(6.000, 128.000, Point.CARTESIAN),
-                                new Point(29.000, 130.500, Point.CARTESIAN)
+                                new Point(37.000, 128.200, Point.CARTESIAN)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(35))
+                .setConstantHeadingInterpolation(Math.toRadians(90))
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(29.000, 130.500, Point.CARTESIAN),
+                                new Point(37.000, 128.200, Point.CARTESIAN),
                                 new Point(5.500, 128.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(315))
                 .addPath(
                         // Line 8
-                        new BezierCurve(
+                        new BezierLine(
                                 new Point(5.500, 128.000, Point.CARTESIAN),
-                                new Point(53.000, 135.000, Point.CARTESIAN),
-                                new Point(53.000, 95.000, Point.CARTESIAN)
+                                new Point(6.000, 107.000, Point.CARTESIAN)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(90));
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .addPath(
+                        // Line 9
+                        new BezierLine(
+                                new Point(6.000, 107.000, Point.CARTESIAN),
+                                new Point(5.500, 128.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(315))
+                .addPath(
+                        // Line 10
+                        new BezierLine(
+                                new Point(5.500, 128.000, Point.CARTESIAN),
+                                new Point(6.000, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90));
 
         return builder.build();
     }

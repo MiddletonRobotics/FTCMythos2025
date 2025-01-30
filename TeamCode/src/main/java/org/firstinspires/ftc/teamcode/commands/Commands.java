@@ -31,6 +31,7 @@ public class Commands {
     public static Command prepareSpeciman(ElevatorSubsystem elevatorSubsystem) { return new PrepareSpeciman(elevatorSubsystem); }
     public static Command prepareSpecimanAuto(ElevatorSubsystem elevatorSubsystem) { return new PrepareSpecimanAuto(elevatorSubsystem); }
     public static Command scoreSpeciman(ElevatorSubsystem elevatorSubsystem) { return new ScoreSpeciman(elevatorSubsystem); }
+    public static Command scoreBucket(ElevatorSubsystem elevatorSubsystem) { return  new ScoreBucket(elevatorSubsystem); }
     public static Command scoreBucketThenRetract(ElevatorSubsystem elevatorSubsystem) { return new ScoreBucketThenRetract(elevatorSubsystem); }
     public static Command scoreSpecimanThenRetract(ElevatorSubsystem elevatorSubsystem) { return new ScoreSpecimanThenRetract(elevatorSubsystem); }
     public static Command retractElevator(ElevatorSubsystem elevatorSubsystem) { return new RetractElevator(elevatorSubsystem); }

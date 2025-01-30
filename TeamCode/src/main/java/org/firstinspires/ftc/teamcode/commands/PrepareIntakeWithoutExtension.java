@@ -45,7 +45,7 @@ public class PrepareIntakeWithoutExtension extends CommandBase {
     @Override
     public void execute() {
         if(elevatorWasMoved) {
-            if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 1) {
+            if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() < 0.5) {
                 elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.CLEARENCE);
 
                 intakeSubsystem.intakeToPosition(
@@ -54,7 +54,7 @@ public class PrepareIntakeWithoutExtension extends CommandBase {
                         IntakeSubsystem.WristState.NORMAL,
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 );
-            } else if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1) {
+            } else if(intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 0.5) {
                 elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.RETRACTED);
             }
         } else {
@@ -71,6 +71,6 @@ public class PrepareIntakeWithoutExtension extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 1;
+        return intakeSubsystem.intakeTimer.getElapsedTimeSeconds() > 0.5;
     }
 }
