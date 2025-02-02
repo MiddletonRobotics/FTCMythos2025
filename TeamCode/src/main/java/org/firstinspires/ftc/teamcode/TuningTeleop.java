@@ -164,10 +164,10 @@ public class TuningTeleop extends CommandOpMode {
                 new RetractElevator(elevator),
                 () -> elevator.getViperPosition() > 3000
         )));
+        drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
 
         register(drivetrain, elevator);
         schedule(new RunCommand(telemetry::update));
-        drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
     }
 
     @Override

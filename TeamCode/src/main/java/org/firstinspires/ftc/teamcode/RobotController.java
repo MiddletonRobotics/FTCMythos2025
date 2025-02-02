@@ -46,7 +46,7 @@ public class RobotController extends CommandOpMode {
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides;
+    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -70,12 +70,8 @@ public class RobotController extends CommandOpMode {
 
         extendSlides = new GamepadButton(driverController, GamepadKeys.Button.A);
         autoTransfer = new GamepadButton(driverController, GamepadKeys.Button.B);
-
-        drivingToggle = new GamepadButton(driverController, GamepadKeys.Button.DPAD_UP);
         outtakeClaw = new GamepadButton(driverController, GamepadKeys.Button.X);
         manualIntake = new GamepadButton(driverController, GamepadKeys.Button.Y);
-        intakeRotate = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_LEFT);
-        intakeRotate2 = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_RIGHT);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
 
@@ -84,11 +80,10 @@ public class RobotController extends CommandOpMode {
         intakeSpeciman = new GamepadButton(operatorController, GamepadKeys.Button.Y);
         sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
         retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
+        intakeRotate = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_LEFT);
+        intakeRotate2 = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_RIGHT);
 
         autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
-        drivingToggle.toggleWhenPressed(new InstantCommand((() -> drivetrain.setDefaultCommand(new FieldOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX, imu)))),
-                new InstantCommand((() -> drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX)))));
-
         manualIntake.whenPressed(new IntakeSample(elevator, intake));
         outtakeClaw.whenPressed(
                 new InstantCommand((() -> elevator.manipulatorToPosition(
@@ -129,6 +124,7 @@ public class RobotController extends CommandOpMode {
                         intake.getWristState(),
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 )), intake));
+
 
         intakeRotate.toggleWhenPressed(new InstantCommand((() -> intake.intakeToPosition(
                 intake.getExtensionState(),

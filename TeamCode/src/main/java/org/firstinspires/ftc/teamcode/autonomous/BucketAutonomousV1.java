@@ -36,30 +36,33 @@ public class BucketAutonomousV1 extends CommandOpMode {
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
                         Commands.intakeIn(intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(0)).alongWith(Commands.prepareBucket(elevatorSubsystem))),
+                        Commands.sleep(500),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(1))),
                         Commands.IntakeDown(intakeSubsystem),
                         Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(2)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
+                        Commands.sleep(500),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(3))),
                         Commands.IntakeDown(intakeSubsystem),
                         Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(4)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
+                        Commands.sleep(1000),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(5))),
                         Commands.RotateIntakeToPosition(intakeSubsystem),
                         Commands.IntakeDown(intakeSubsystem),
                         Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(6)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
-                        Commands.sleep(250).andThen(Commands.scoreBucketThenRetract(elevatorSubsystem)),
+                        Commands.sleep(1000).andThen(Commands.scoreBucketThenRetract(elevatorSubsystem)),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(7))),
                         Commands.RotateIntakeToPosition(intakeSubsystem),
                         Commands.sleep(50).andThen(Commands.IntakeDown(intakeSubsystem)),
-                        Commands.sleep(175).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
+                        Commands.sleep(350).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(8)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
-                        (Commands.scoreBucketThenRetract(elevatorSubsystem)),
-                        Commands.sleep(3000).andThen(Commands.followPath(follower,chain.getPath(9)))
+                        Commands.sleep(500),
+                        (Commands.scoreBucketThenRetract(elevatorSubsystem))
                 )
         );
     }
