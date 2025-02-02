@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-@Autonomous(name="W-4Bucket", group = "Working")
+@Autonomous(name="W-5Bucket", group = "Working")
 public class BucketAutonomousV1 extends CommandOpMode {
     public PathChain chain;
     public Follower follower;
@@ -65,5 +65,28 @@ public class BucketAutonomousV1 extends CommandOpMode {
                         (Commands.scoreBucketThenRetract(elevatorSubsystem))
                 )
         );
+    }
+
+    @Override
+    public void runOpMode() {
+        initialize();
+
+        while (!opModeIsActive()) {
+
+        }
+
+        waitForStart();
+
+        // run the scheduler
+        while (!isStopRequested() && opModeIsActive()) {
+            run();
+            telemetry.addData("Viper Motor Power", elevatorSubsystem.viperMotor.getPower());
+            telemetry.addData("Follower Position X", follower.getPose().getX());
+            telemetry.addData("Follower Position Y", follower.getPose().getX());
+            telemetry.addData("Follower Heading", follower.getPose().getHeading());
+            telemetry.addData("Follower Busy", follower.isBusy());
+        }
+
+        reset();
     }
 }
