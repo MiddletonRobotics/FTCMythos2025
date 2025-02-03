@@ -9,13 +9,13 @@ import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 public class UltrasonicDistanceTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
-        DrivetrainSubsystem basketSensor = new DrivetrainSubsystem(hardwareMap);
+        DrivetrainSubsystem drivetrain = new DrivetrainSubsystem(hardwareMap);
 
         waitForStart();
 
         while (!isStopRequested()) {
-            telemetry.addData("left sensor", basketSensor.getSensorLeft());
-            telemetry.addData("right sensor", basketSensor.getSensorRight());
+            telemetry.addData("left sensor", drivetrain.getSensorLeft());
+            telemetry.addData("right sensor", drivetrain.getSensorRight());
             telemetry.update();
             CommandScheduler.getInstance().run();
         }
