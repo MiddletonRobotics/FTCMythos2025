@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.Commands;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.utilities.constants.Constants;
 
@@ -70,5 +72,41 @@ public class LEDSubsystem extends SubsystemBase {
 
     private ColorState getColorState() {
         return colorState;
+    }
+
+    public static Command flashGreen(LEDSubsystem ledSubsystem) {
+        return new SequentialCommandGroup(
+                new RunCommand(() -> ledSubsystem.ledSubsystemTimer.resetTimer()),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500)
+        );
+    }
+
+    public static Command flashRed(LEDSubsystem ledSubsystem) {
+        return new SequentialCommandGroup(
+                new RunCommand(() -> ledSubsystem.ledSubsystemTimer.resetTimer()),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
+                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(500)
+        );
     }
 }
