@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.RobotDrive;
 import com.arcrobotics.ftclib.geometry.Vector2d;
+
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -11,14 +13,52 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class DrivetrainSubsystem extends SubsystemBase {
     private MecanumDrive mecanumDrive;
-    private Rev2mDistanceSensor frontDistanceSensor, rearDistanceSensor;
+    private AnalogInput ultraSensorLeft, ultraSensorRear;
+
+    private DistanceUnit unit = DistanceUnit.INCH;
+
+    private final Queue<Double> sensorLeftData = new LinkedList<>();
+    private final Queue<Double> sensorRearData = new LinkedList<>();
+
+    private double sensorLeftAverage;
+    private double sensorRearAverage;
+
+    public static int rollingAverageSize = 3;
 
     public DrivetrainSubsystem(HardwareMap aHardwareMap) {
         mecanumDrive = new MecanumDrive(aHardwareMap);
-        frontDistanceSensor = aHardwareMap.get(Rev2mDistanceSensor.class, "frontDistanceSensor");
-        rearDistanceSensor = aHardwareMap.get(Rev2mDistanceSensor.class, "rearDistanceSensor");
+        ultraSensorLeft = aHardwareMap.get(AnalogInput.class, "leftUltraSensor");
+        ultraSensorRear = aHardwareMap.get(AnalogInput.class, "rearUltraSensor");
+    }
+
+    @Override
+    public void periodic() {
+        sensorLeftData.add(ultraSensorLeft.getVoltage());
+        if (sensorLeftData.size() > rollingAverageSize) {
+            sensorLeftData.remove();
+        }
+
+        // noinspection OptionalGetWithoutIsPresent
+        sensorLeftAverage = sensorLeftData.stream()
+                .reduce((total, el) -> total + el / sensorLeftData.size()).get();
+
+        sensorRearData.add(ultraSensorRear.getVoltage());
+        if (sensorRearData.size() > rollingAverageSize) {
+            sensorRearData.remove();
+        }
+
+        // noinspection OptionalGetWithoutIsPresent
+        sensorRearAverage = sensorRearData.stream()
+                .reduce((total, el) -> total + el / sensorRearData.size()).get();
+    }
+
+    public void setDistanceUnit(DistanceUnit distanceUnit) {
+        unit = distanceUnit;
     }
 
     public void resetHeading(IMU imu) {
@@ -42,11 +82,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         driveRobotCentric(strafeSpeed, forwardSpeed, rotationalSpeed, false);
     }
 
-    public double getFrontDistance() {
-        return frontDistanceSensor.getDistance(DistanceUnit.MM);
+    public double getSensorLeft() {
+        return unit.fromCm(sensorLeftAverage * 500 / 3.3);
     }
 
-    public double getRearDistance() {
-        return rearDistanceSensor.getDistance(DistanceUnit.MM);
+    public double getSensorRight() {
+        return unit.fromCm(sensorRearAverage * 500 / 3.3);
     }
 }
