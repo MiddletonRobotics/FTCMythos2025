@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.commands.ScoreBucketThenRetract;
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class RobotController extends CommandOpMode {
     private DrivetrainSubsystem drivetrain;
     private IntakeSubsystem intake;
     private ElevatorSubsystem elevator;
+    private LEDSubsystem ledSubsystem;
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
@@ -56,6 +58,7 @@ public class RobotController extends CommandOpMode {
         drivetrain = new DrivetrainSubsystem(hardwareMap);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
+        ledSubsystem = new LEDSubsystem(hardwareMap, telemetry);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -83,8 +86,8 @@ public class RobotController extends CommandOpMode {
         intakeRotate = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_LEFT);
         intakeRotate2 = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_RIGHT);
 
-        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
-        manualIntake.whenPressed(new IntakeSample(elevator, intake));
+        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake, ledSubsystem).alongWith(ledSubsystem.flashColor(ledSubsystem, LEDSubsystem.ColorState.RED)));
+        manualIntake.whenPressed(new IntakeSample(elevator, intake, ledSubsystem));
         outtakeClaw.whenPressed(
                 new InstantCommand((() -> elevator.manipulatorToPosition(
                         elevator.getArmState(),

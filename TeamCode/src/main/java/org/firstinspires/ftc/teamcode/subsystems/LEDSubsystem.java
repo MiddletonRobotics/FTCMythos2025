@@ -46,11 +46,12 @@ public class LEDSubsystem extends SubsystemBase {
         }
     }
 
-    private ColorState colorState = ColorState.OFF;
+    private ColorState colorState;
 
     public LEDSubsystem(HardwareMap aHardwareMap, Telemetry telemetry) {
         LED = aHardwareMap.get(Servo.class, "led");
-        targetPosition = 0.0;
+        colorState = ColorState.OFF;
+        targetPosition = colorState.getPosition();
 
         this.telemetry = telemetry;
     }
@@ -58,6 +59,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         telemetry.addData("LED State", colorState);
+        telemetry.update();
     }
 
     public void ledToColor(ColorState colorState) {
@@ -74,39 +76,29 @@ public class LEDSubsystem extends SubsystemBase {
         return colorState;
     }
 
-    public static Command flashGreen(LEDSubsystem ledSubsystem) {
+    public Command flashColor(LEDSubsystem ledSubsystem, ColorState colorState) {
         return new SequentialCommandGroup(
-                new RunCommand(() -> ledSubsystem.ledSubsystemTimer.resetTimer()),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
-                Commands.sleep(500),
+                new InstantCommand(() -> ledSubsystem.ledToColor(colorState)),
+                Commands.sleep(75),
                 new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
-                Commands.sleep(500),
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(colorState)),
+                Commands.sleep(75),
                 new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN)),
-                Commands.sleep(500),
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(colorState)),
+                Commands.sleep(75),
                 new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500)
-        );
-    }
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(colorState)),
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(colorState)),
+                Commands.sleep(75),
+                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
+                Commands.sleep(75)
 
-    public static Command flashRed(LEDSubsystem ledSubsystem) {
-        return new SequentialCommandGroup(
-                new RunCommand(() -> ledSubsystem.ledSubsystemTimer.resetTimer()),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.RED)),
-                Commands.sleep(500),
-                new InstantCommand(() -> ledSubsystem.ledToColor(LEDSubsystem.ColorState.OFF)),
-                Commands.sleep(500)
         );
     }
 }

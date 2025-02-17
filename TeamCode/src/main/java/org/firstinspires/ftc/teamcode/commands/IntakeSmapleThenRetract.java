@@ -4,16 +4,19 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 public class IntakeSmapleThenRetract extends CommandBase {
     private final ElevatorSubsystem elevatorSubsystem;
     private final IntakeSubsystem intakeSubsystem;
+    private final LEDSubsystem ledSubsystem;
 
-    public IntakeSmapleThenRetract(ElevatorSubsystem elevatorSubsystem, IntakeSubsystem intakeSubsystem) {
+    public IntakeSmapleThenRetract(ElevatorSubsystem elevatorSubsystem, IntakeSubsystem intakeSubsystem, LEDSubsystem ledSubsystem) {
         this.elevatorSubsystem = elevatorSubsystem;
         this.intakeSubsystem = intakeSubsystem;
+        this.ledSubsystem = ledSubsystem;
 
-        addRequirements(elevatorSubsystem, intakeSubsystem);
+        addRequirements(elevatorSubsystem, intakeSubsystem, ledSubsystem);
     }
 
     @Override
@@ -26,6 +29,7 @@ public class IntakeSmapleThenRetract extends CommandBase {
         );
 
         intakeSubsystem.intakeTimer.resetTimer();
+        ledSubsystem.flashColor(ledSubsystem, LEDSubsystem.ColorState.YELLOW);
     }
 
     @Override
@@ -66,6 +70,8 @@ public class IntakeSmapleThenRetract extends CommandBase {
                     intakeSubsystem.getWristState(),
                     IntakeSubsystem.ClawState.PARTIALLY_OPEN_CLAW
             );
+
+            ledSubsystem.ledToColor(LEDSubsystem.ColorState.GREEN);
         }
     }
 

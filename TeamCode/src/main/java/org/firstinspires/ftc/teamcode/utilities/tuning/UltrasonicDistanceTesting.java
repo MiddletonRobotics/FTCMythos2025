@@ -17,6 +17,7 @@ public class UltrasonicDistanceTesting extends LinearOpMode {
             telemetry.addData("left sensor", drivetrain.getSensorLeft());
             telemetry.addData("right sensor", drivetrain.getSensorRight());
             telemetry.update();
+
             CommandScheduler.getInstance().run();
         }
     }
