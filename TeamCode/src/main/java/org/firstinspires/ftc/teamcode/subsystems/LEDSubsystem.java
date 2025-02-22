@@ -58,8 +58,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        telemetry.addData("LED State", colorState);
-        telemetry.update();
+
     }
 
     public void ledToColor(ColorState colorState) {

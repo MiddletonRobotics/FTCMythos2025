@@ -70,7 +70,8 @@ public class SpecimanAutonomousV6 extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
-
+            elevatorSubsystem.onAutoInit();
+            intakeSubsystem.onInit();
         }
 
         waitForStart();

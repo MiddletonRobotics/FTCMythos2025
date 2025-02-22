@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.utilities.tuning;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
+import org.firstinspires.ftc.teamcode.utilities.PIDFController;
 
 import java.util.List;
 
@@ -25,13 +27,18 @@ public class Limelight3ATesting extends OpMode {
     private static final double MINIMUM_ALIGN_TIME = 1.0;
     private static final double MAX_ALIGN_TIME = 3.0;
 
+    private PIDFController txController = new PIDFController(0.0065, 0.0, 0.000, 0.0);
+    private PIDFController tyController = new PIDFController(0.1, 0.0, 0.0025, 0.0);
+
     private static final double KP = 0.028;
-    private static final double KPB = 0.072;
+    private static final double KPB = 0.1;
     private static final double KD = 0.0025;
 
-    public static double target = 4;
+    public static double target = 0;
+    private double tx;
     private double lastErrorTX = 0;
     private double correctionTX, correctionTY;
+    private boolean alignedCycleStarted = false;
 
     double[][] matriz = new double[6][6];
     int matrixIndex = 0;
@@ -40,7 +47,7 @@ public class Limelight3ATesting extends OpMode {
 
     @Override
     public void init() {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
         drivetrainSubsystem = new DrivetrainSubsystem(hardwareMap, telemetry);
 
         telemetry.setMsTransmissionInterval(11);
@@ -49,7 +56,13 @@ public class Limelight3ATesting extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+
+    }
+
+    @Override
     public void start() {
+        limelight.start();
         safetyTimer.reset(); // Start Maximum Alignment Timer
         aligned = false;
         targetSet = true; // Start timer when
@@ -57,53 +70,21 @@ public class Limelight3ATesting extends OpMode {
 
     @Override
     public void loop() {
-        int alignedCycles = 0;
-
-        while (!aligned) { // Keep running until aligned
             LLResult result = limelight.getLatestResult();
 
             if (result == null && !result.isValid()) {
                 System.out.println(" Maximum Alignment Time Reached");
-                limelight.stop();
-                drivetrainSubsystem.driveRobotCentric(0, 0, 0);
             }
 
-            double tx = result.getTx();
-            double errorTX = -target - tx; // 1.5
+            tx = result.getTx();
+            txController.setSetPoint(target);
 
-            // Updating matrix and recalculate the sum and average
-            int row = matrixIndex % 6;
-            int col = matrixIndex / 6 % 6;
+            drivetrainSubsystem.driveRobotCentric(0, 0, txController.calculate(tx, target));
 
-            sumErrorTX -= matriz[row][col]; // Remove old values
-            matriz[row][col] = errorTX;     // Update the value in the array
-            sumErrorTX += errorTX;          // Add the new value in the sum
-            matrixIndex++;
 
-            media = sumErrorTX / 36.0; // Calculating average
-
-            double derivativeTX = errorTX - lastErrorTX;
-            lastErrorTX = errorTX;
-
-            if (Math.abs(media) < 3) {
-                correctionTX = (KPB * errorTX) + (KD * derivativeTX);
-            } else {
-                correctionTX = (KP * errorTX) + (KD * derivativeTX);
-            }
-
-            drivetrainSubsystem.driveRobotCentric(0, 0, correctionTX * 0.7);
-
-            if (Math.abs(media) < 0.8 && timer.seconds() > MINIMUM_ALIGN_TIME) {
-                aligned = true;
-                limelight.stop();
-                drivetrainSubsystem.driveRobotCentric(0, 0, 0);
-            }
-
-            telemetry.addData("tx", tx);
-            telemetry.addData("media", Math.abs(media));
-            telemetry.addData("CorrectionTx", correctionTX);
-            telemetry.addData("Alignment Status", aligned);
-            telemetry.addData("Error TX", errorTX);
-        }
+        telemetry.addData("tx", tx);
+        telemetry.addData("CorrectionTx", correctionTX);
+        telemetry.addData("Alignment Status", aligned);
+        telemetry.addData("Error TX", txController.getPositionError());
     }
 }

@@ -175,6 +175,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         grabberServo.setPosition(this.clawState.getPosition());
     }
 
+    public void onInit() {
+        elevatorToPosition(LiftState.RETRACTED);
+        manipulatorToPosition(ArmState.TRANSFER, WristState.TRANSFER, ClawState.OPEN_CLAW);
+    }
+
+    public void onAutoInit() {
+        elevatorToPosition(LiftState.RETRACTED);
+        manipulatorToPosition(ArmState.SPECIMAN_READY, WristState.SPECIMAN_READY, ClawState.CLOSE_CLAW);
+    }
+
     private void setLiftState(LiftState liftState) {
         viperState = liftState;
     }
