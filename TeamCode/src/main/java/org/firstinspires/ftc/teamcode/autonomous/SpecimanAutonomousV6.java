@@ -79,7 +79,10 @@ public class SpecimanAutonomousV6 extends CommandOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             run();
             telemetry.addData("Viper Motor Power", elevatorSubsystem.viperMotor.getPower());
-            telemetry.addData("Follower Busy", follower.isBusy() );
+            telemetry.addData("Follower Position X", follower.getPose().getX());
+            telemetry.addData("Follower Position Y", follower.getPose().getX());
+            telemetry.addData("Follower Heading", follower.getPose().getHeading());
+            telemetry.addData("Follower Busy", follower.isBusy());
         }
 
         reset();
