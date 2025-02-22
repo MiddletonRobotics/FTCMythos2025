@@ -16,10 +16,17 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
+import org.firstinspires.ftc.teamcode.autonomous.paths.Paths;
 import org.firstinspires.ftc.teamcode.commands.IntakeSample;
 import org.firstinspires.ftc.teamcode.commands.IntakeSmapleThenRetract;
 import org.firstinspires.ftc.teamcode.commands.PrepareToIntake;
+import org.firstinspires.ftc.teamcode.commands.RobotDriveFollower;
 import org.firstinspires.ftc.teamcode.commands.RobotOrientedDrive;
 import org.firstinspires.ftc.teamcode.commands.ScoreSpecimanThenRetract;
 import org.firstinspires.ftc.teamcode.commands.UninterruptableCommand;
@@ -31,6 +38,10 @@ import org.firstinspires.ftc.teamcode.commands.PrepareBucket;
 import org.firstinspires.ftc.teamcode.commands.PrepareSpeciman;
 import org.firstinspires.ftc.teamcode.commands.RetractElevator;
 import org.firstinspires.ftc.teamcode.commands.ScoreBucketThenRetract;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -43,19 +54,25 @@ public class RobotController extends CommandOpMode {
     private DrivetrainSubsystem drivetrain;
     private IntakeSubsystem intake;
     private ElevatorSubsystem elevator;
+    private Limelight3A limelight;
     private IMU imu;
 
+    public PathChain chain;
+    private PathBuilder builder;
+
     private GamepadEx driverController, operatorController;
-    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides;
+    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides, autoScore;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
 
     @Override
     public void initialize() {
-        drivetrain = new DrivetrainSubsystem(hardwareMap);
+        drivetrain = new DrivetrainSubsystem(hardwareMap, telemetry);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap, telemetry);
+        intake = new IntakeSubsystem(hardwareMap, telemetry); 
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+        limelight.pipelineSwitch(0);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -64,6 +81,8 @@ public class RobotController extends CommandOpMode {
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(parameters);
+
+        builder = new PathBuilder();
 
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
@@ -74,6 +93,7 @@ public class RobotController extends CommandOpMode {
         manualIntake = new GamepadButton(driverController, GamepadKeys.Button.Y);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
+        autoScore = new GamepadButton(operatorController, GamepadKeys.Button.START);
 
         intakeClaw = new GamepadButton(operatorController, GamepadKeys.Button.A);
         intakeDown = new GamepadButton(operatorController, GamepadKeys.Button.X);
@@ -82,6 +102,17 @@ public class RobotController extends CommandOpMode {
         retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
         intakeRotate = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_LEFT);
         intakeRotate2 = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_RIGHT);
+
+        chain = builder.addPath(
+                new BezierLine(
+                        new Point(
+                                drivetrain.follower.getPose().getX(),
+                                drivetrain.follower.getPose().getY(),
+                                Point.CARTESIAN
+                        ),
+                        new Point(31.000, 80.000, Point.CARTESIAN)
+                )
+        ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
         autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
         manualIntake.whenPressed(new IntakeSample(elevator, intake));
@@ -150,6 +181,12 @@ public class RobotController extends CommandOpMode {
                 intake.getClawState()
         ))));
 
+        autoScore.whenPressed(new SequentialCommandGroup(
+                Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)),
+                Commands.scoreSpeciman(elevator)
+        ));
+
+
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
         scoreSpeciman.whenPressed(new ScoreSpecimanThenRetract(elevator));
@@ -161,9 +198,13 @@ public class RobotController extends CommandOpMode {
         )));
 
         register(drivetrain, elevator);
-        schedule(new RunCommand(telemetry::update));
-        drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
+        schedule(new RunCommand(telemetry::update), new RunCommand(drivetrain::updateFollower));
+        drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
+        //drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
+
+        telemetry.update();
     }
+
 
     @Override
     public void runOpMode() {

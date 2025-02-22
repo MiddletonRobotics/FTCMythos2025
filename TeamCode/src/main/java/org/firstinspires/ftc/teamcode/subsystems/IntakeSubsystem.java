@@ -110,11 +110,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        /*
         telemetry.addData("Extension State", extensionState);
         telemetry.addData("Arm State", armState);
         telemetry.addData("Wrist State", wristState);
         telemetry.addData("Claw State", clawState);
         telemetry.update();
+         */
     }
 
     public void intakeToPosition(ExtensionState extensionState, ArmState armState, WristState wristState, ClawState clawState) {

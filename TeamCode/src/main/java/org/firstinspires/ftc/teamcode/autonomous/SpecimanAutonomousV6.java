@@ -28,7 +28,7 @@ public class SpecimanAutonomousV6 extends CommandOpMode {
         this.elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
         this.intakeSubsystem = new IntakeSubsystem(hardwareMap, telemetry);
         this.follower = new Follower(hardwareMap);
-        this.follower.setStartingPose(new Pose(0.5, 66.0, 0.0));
+        this.follower.setStartingPose(new Pose(0.5, 73.0, 0.0));
         this.chain = Paths.fiveSpecimanNoPreload;
 
         schedule(

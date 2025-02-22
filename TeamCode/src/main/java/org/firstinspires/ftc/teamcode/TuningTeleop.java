@@ -54,7 +54,7 @@ public class TuningTeleop extends CommandOpMode {
 
     @Override
     public void initialize() {
-        drivetrain = new DrivetrainSubsystem(hardwareMap);
+        drivetrain = new DrivetrainSubsystem(hardwareMap, telemetry);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
