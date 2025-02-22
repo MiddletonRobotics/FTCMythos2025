@@ -4,16 +4,19 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 public class IntakeSample extends CommandBase {
     private final ElevatorSubsystem elevatorSubsystem;
     private final IntakeSubsystem intakeSubsystem;
+    private final LEDSubsystem ledSubsystem;
 
-    public IntakeSample(ElevatorSubsystem elevatorSubsystem, IntakeSubsystem intakeSubsystem) {
+    public IntakeSample(ElevatorSubsystem elevatorSubsystem, IntakeSubsystem intakeSubsystem, LEDSubsystem ledSubsystem) {
         this.elevatorSubsystem = elevatorSubsystem;
         this.intakeSubsystem = intakeSubsystem;
+        this.ledSubsystem = ledSubsystem;
 
-        addRequirements(elevatorSubsystem, intakeSubsystem);
+        addRequirements(elevatorSubsystem, intakeSubsystem, ledSubsystem);
     }
 
     @Override
@@ -26,6 +29,7 @@ public class IntakeSample extends CommandBase {
         );
 
         intakeSubsystem.intakeTimer.resetTimer();
+        ledSubsystem.ledToColor(LEDSubsystem.ColorState.YELLOW);
     }
 
     @Override

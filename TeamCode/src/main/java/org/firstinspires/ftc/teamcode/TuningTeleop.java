@@ -35,6 +35,7 @@ import org.firstinspires.ftc.teamcode.commands.ScoreBucketThenRetract;
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class TuningTeleop extends CommandOpMode {
     private DrivetrainSubsystem drivetrain;
     private IntakeSubsystem intake;
     private ElevatorSubsystem elevator;
+    private LEDSubsystem ledSubsystem;
     private IMU imu;
 
     private GamepadEx driverController, operatorController;
@@ -57,6 +59,7 @@ public class TuningTeleop extends CommandOpMode {
         drivetrain = new DrivetrainSubsystem(hardwareMap, telemetry);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
+        ledSubsystem = new LEDSubsystem(hardwareMap, telemetry);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -86,11 +89,11 @@ public class TuningTeleop extends CommandOpMode {
         sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
         retractElevator = new GamepadButton(operatorController, GamepadKeys.Button.LEFT_BUMPER);
 
-        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
+        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake, ledSubsystem));
         drivingToggle.toggleWhenPressed(new InstantCommand((() -> drivetrain.setDefaultCommand(new FieldOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX, imu)))),
                 new InstantCommand((() -> drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX)))));
 
-        manualIntake.whenPressed(new IntakeSample(elevator, intake));
+        manualIntake.whenPressed(new IntakeSample(elevator, intake, ledSubsystem));
         outtakeClaw.whenPressed(
                 new InstantCommand((() -> elevator.manipulatorToPosition(
                         elevator.getArmState(),
