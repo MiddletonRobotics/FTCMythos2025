@@ -6,88 +6,104 @@ import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 
 import java.util.List;
 
 @TeleOp
 public class Limelight3ATesting extends OpMode {
     private Limelight3A limelight;
+    private DrivetrainSubsystem drivetrainSubsystem;
+
+    private boolean targetSet = false;
+    private boolean aligned = false;
+    private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime safetyTimer = new ElapsedTime();
+    private static final double MINIMUM_ALIGN_TIME = 1.0;
+    private static final double MAX_ALIGN_TIME = 3.0;
+
+    private static final double KP = 0.028;
+    private static final double KPB = 0.072;
+    private static final double KD = 0.0025;
+
+    public static double target = 4;
+    private double lastErrorTX = 0;
+    private double correctionTX, correctionTY;
+
+    double[][] matriz = new double[6][6];
+    int matrixIndex = 0;
+    double sumErrorTX = 0; // Cumulative sum used to calculate the average of error
+    double media;
 
     @Override
     public void init() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        telemetry.setMsTransmissionInterval(11);
+        drivetrainSubsystem = new DrivetrainSubsystem(hardwareMap, telemetry);
 
+        telemetry.setMsTransmissionInterval(11);
         limelight.pipelineSwitch(0);
         limelight.start();
     }
 
     @Override
-    public void start() {}
+    public void start() {
+        safetyTimer.reset(); // Start Maximum Alignment Timer
+        aligned = false;
+        targetSet = true; // Start timer when
+    }
 
     @Override
     public void loop() {
-        LLStatus status = limelight.getStatus();
-        telemetry.addData("Name", "%s", status.getName());
-        telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d", status.getTemp(), status.getCpu(),(int)status.getFps());
-        telemetry.addData("Pipeline", "Index: %d, Type: %s", status.getPipelineIndex(), status.getPipelineType());
+        int alignedCycles = 0;
 
-        LLResult result = limelight.getLatestResult();
+        while (!aligned) { // Keep running until aligned
+            LLResult result = limelight.getLatestResult();
 
-        if (result != null) {
-            Pose3D botpose = result.getBotpose();
-            double captureLatency = result.getCaptureLatency();
-            double targetingLatency = result.getTargetingLatency();
-            double parseLatency = result.getParseLatency();
-
-            telemetry.addData("LL Latency", captureLatency + targetingLatency);
-            telemetry.addData("Parse Latency", parseLatency);
-            telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
-
-            if (result.isValid()) {
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
-
-                telemetry.addData("Botpose", botpose.toString());
-
-                // Access barcode results
-                List<LLResultTypes.BarcodeResult> barcodeResults = result.getBarcodeResults();
-                for (LLResultTypes.BarcodeResult br : barcodeResults) {
-                    telemetry.addData("Barcode", "Data: %s", br.getData());
-                }
-
-                // Access classifier results
-                List<LLResultTypes.ClassifierResult> classifierResults = result.getClassifierResults();
-                for (LLResultTypes.ClassifierResult cr : classifierResults) {
-                    telemetry.addData("Classifier", "Class: %s, Confidence: %.2f", cr.getClassName(), cr.getConfidence());
-                }
-
-                // Access detector results
-                List<LLResultTypes.DetectorResult> detectorResults = result.getDetectorResults();
-                for (LLResultTypes.DetectorResult dr : detectorResults) {
-                    telemetry.addData("Detector", "Class: %s, Area: %.2f", dr.getClassName(), dr.getTargetArea());
-                }
-
-                // Access fiducial results
-                List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-                for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(),fr.getTargetXDegrees(), fr.getTargetYDegrees());
-                }
-
-                // Access color results
-                List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-                for (LLResultTypes.ColorResult cr : colorResults) {
-                    telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
-                }
+            if (result == null && !result.isValid()) {
+                System.out.println(" Maximum Alignment Time Reached");
+                limelight.stop();
+                drivetrainSubsystem.driveRobotCentric(0, 0, 0);
             }
-        } else {
-            telemetry.addData("Limelight", "No data available");
-        }
 
-        telemetry.update();
+            double tx = result.getTx();
+            double errorTX = -target - tx; // 1.5
+
+            // Updating matrix and recalculate the sum and average
+            int row = matrixIndex % 6;
+            int col = matrixIndex / 6 % 6;
+
+            sumErrorTX -= matriz[row][col]; // Remove old values
+            matriz[row][col] = errorTX;     // Update the value in the array
+            sumErrorTX += errorTX;          // Add the new value in the sum
+            matrixIndex++;
+
+            media = sumErrorTX / 36.0; // Calculating average
+
+            double derivativeTX = errorTX - lastErrorTX;
+            lastErrorTX = errorTX;
+
+            if (Math.abs(media) < 3) {
+                correctionTX = (KPB * errorTX) + (KD * derivativeTX);
+            } else {
+                correctionTX = (KP * errorTX) + (KD * derivativeTX);
+            }
+
+            drivetrainSubsystem.driveRobotCentric(0, 0, correctionTX * 0.7);
+
+            if (Math.abs(media) < 0.8 && timer.seconds() > MINIMUM_ALIGN_TIME) {
+                aligned = true;
+                limelight.stop();
+                drivetrainSubsystem.driveRobotCentric(0, 0, 0);
+            }
+
+            telemetry.addData("tx", tx);
+            telemetry.addData("media", Math.abs(media));
+            telemetry.addData("CorrectionTx", correctionTX);
+            telemetry.addData("Alignment Status", aligned);
+            telemetry.addData("Error TX", errorTX);
+        }
     }
 }

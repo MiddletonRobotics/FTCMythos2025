@@ -45,6 +45,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class RobotController extends CommandOpMode {
     private DrivetrainSubsystem drivetrain;
     private IntakeSubsystem intake;
     private ElevatorSubsystem elevator;
+    private LEDSubsystem led;
     private Limelight3A limelight;
     private IMU imu;
 
@@ -61,7 +63,7 @@ public class RobotController extends CommandOpMode {
     private PathBuilder builder;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides, autoScore;
+    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides, autoScore, endScore;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -70,9 +72,8 @@ public class RobotController extends CommandOpMode {
     public void initialize() {
         drivetrain = new DrivetrainSubsystem(hardwareMap, telemetry);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
-        intake = new IntakeSubsystem(hardwareMap, telemetry); 
-        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
-        limelight.pipelineSwitch(0);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
+        led = new LEDSubsystem(hardwareMap, telemetry);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -82,7 +83,7 @@ public class RobotController extends CommandOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(parameters);
 
-        builder = new PathBuilder();
+        chain = drivetrain.getAutoScoringPath();
 
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
@@ -93,7 +94,8 @@ public class RobotController extends CommandOpMode {
         manualIntake = new GamepadButton(driverController, GamepadKeys.Button.Y);
         prepareSpeciman = new GamepadButton(driverController, GamepadKeys.Button.LEFT_BUMPER);
         scoreSpeciman = new GamepadButton(driverController, GamepadKeys.Button.RIGHT_BUMPER);
-        autoScore = new GamepadButton(operatorController, GamepadKeys.Button.START);
+        autoScore = new GamepadButton(driverController, GamepadKeys.Button.START);
+        endScore = new GamepadButton(driverController, GamepadKeys.Button.BACK);
 
         intakeClaw = new GamepadButton(operatorController, GamepadKeys.Button.A);
         intakeDown = new GamepadButton(operatorController, GamepadKeys.Button.X);
@@ -103,19 +105,8 @@ public class RobotController extends CommandOpMode {
         intakeRotate = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_LEFT);
         intakeRotate2 = new GamepadButton(operatorController, GamepadKeys.Button.DPAD_RIGHT);
 
-        chain = builder.addPath(
-                new BezierLine(
-                        new Point(
-                                drivetrain.follower.getPose().getX(),
-                                drivetrain.follower.getPose().getY(),
-                                Point.CARTESIAN
-                        ),
-                        new Point(31.000, 80.000, Point.CARTESIAN)
-                )
-        ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
-
-        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake));
-        manualIntake.whenPressed(new IntakeSample(elevator, intake));
+        autoTransfer.whenPressed(new IntakeSmapleThenRetract(elevator, intake, led));
+        manualIntake.whenPressed(new IntakeSample(elevator, intake, led));
         outtakeClaw.whenPressed(
                 new InstantCommand((() -> elevator.manipulatorToPosition(
                         elevator.getArmState(),
@@ -182,9 +173,13 @@ public class RobotController extends CommandOpMode {
         ))));
 
         autoScore.whenPressed(new SequentialCommandGroup(
+                new InstantCommand(() -> drivetrain.setAutoScoringState(DrivetrainSubsystem.AutoScoringState.ON)),
                 Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)),
-                Commands.scoreSpeciman(elevator)
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator))
         ));
+
+        endScore.whenPressed(new InstantCommand(() -> drivetrain.follower.breakFollowing()).andThen(new IntakeSmapleThenRetract(elevator, intake, led)));
 
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
@@ -198,8 +193,8 @@ public class RobotController extends CommandOpMode {
         )));
 
         register(drivetrain, elevator);
-        schedule(new RunCommand(telemetry::update), new RunCommand(drivetrain::updateFollower));
-        drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
+        schedule(new RunCommand(telemetry::update));
+        drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, elevator, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
         //drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
 
         telemetry.update();
