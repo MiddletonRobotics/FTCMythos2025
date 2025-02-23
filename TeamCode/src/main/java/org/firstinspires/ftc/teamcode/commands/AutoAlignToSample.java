@@ -47,8 +47,6 @@ public class AutoAlignToSample extends CommandBase {
 
     @Override
     public void initialize() {
-        limelight.pipelineSwitch(0);
-        limelight.start();
         safetyTimer.reset();
     }
 
@@ -99,6 +97,6 @@ public class AutoAlignToSample extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return safetyTimer.seconds() > 3;
+        return safetyTimer.seconds() > 2;
     }
 }

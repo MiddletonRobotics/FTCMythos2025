@@ -14,21 +14,16 @@ import java.util.function.DoubleSupplier;
 
 public class RobotDriveFollower extends CommandBase {
     private DrivetrainSubsystem drivetrain;
-    private ElevatorSubsystem elevator;
     private DoubleSupplier forward, strafe, rotation;
     private boolean squareInputs = false;
-    private PathChain chain;
 
-    public RobotDriveFollower(DrivetrainSubsystem drivetrain, ElevatorSubsystem elevator, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier rotation) {
+    public RobotDriveFollower(DrivetrainSubsystem drivetrain, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier rotation) {
         this.drivetrain = drivetrain;
-        this.elevator = elevator;
         this.forward = forward;
         this.strafe = strafe;
         this.rotation = rotation;
 
-        chain = drivetrain.getAutoScoringPath();
-
-        addRequirements(drivetrain, elevator);
+        addRequirements(drivetrain);
     }
 
     @Override
@@ -37,15 +32,6 @@ public class RobotDriveFollower extends CommandBase {
 
     @Override
     public void execute() {
-        if(drivetrain.getAutoScoringState() == DrivetrainSubsystem.AutoScoringState.OFF) {
-            drivetrain.driveRobotPedroFollower(strafe.getAsDouble() * 0.9, forward.getAsDouble() * 0.9, rotation.getAsDouble() * 0.6);
-        } else {
-            new SequentialCommandGroup(
-                    new InstantCommand(() -> drivetrain.setAutoScoringState(DrivetrainSubsystem.AutoScoringState.ON)),
-                    Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)),
-                    Commands.scoreSpeciman(elevator),
-                    Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator))
-            );
-        }
+        drivetrain.driveRobotPedroFollower(strafe.getAsDouble() * 0.9, forward.getAsDouble() * 0.9, rotation.getAsDouble() * 0.6);
     }
 }

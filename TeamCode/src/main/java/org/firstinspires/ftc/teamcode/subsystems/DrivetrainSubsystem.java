@@ -79,15 +79,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        /*
         telemetry.addData("Drivetrain Pose X", follower.getPose().getX());
         telemetry.addData("Drivetrain Pose Y", follower.getPose().getY());
         telemetry.addData("Drivetrain Heading", follower.getPose().getHeading());
         telemetry.update();
 
-         */
-
-        /*
+        follower.update();
 
         switch (autoScoringState) {
             case ON:
@@ -98,14 +95,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     follower.startTeleopDrive();
                     breakFollowingSupplier = true;
                 }
-
                 break;
         }
-
-
-         */
-
-        follower.update();
     }
 
     public void resetHeading(IMU imu) {

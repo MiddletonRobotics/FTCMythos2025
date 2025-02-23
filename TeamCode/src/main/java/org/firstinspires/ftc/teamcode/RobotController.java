@@ -24,6 +24,8 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 import org.firstinspires.ftc.teamcode.autonomous.paths.Paths;
+import org.firstinspires.ftc.teamcode.commands.AutoIntakingThenTransfer;
+import org.firstinspires.ftc.teamcode.commands.AutoScoringSpecimans;
 import org.firstinspires.ftc.teamcode.commands.IntakeSample;
 import org.firstinspires.ftc.teamcode.commands.IntakeSmapleThenRetract;
 import org.firstinspires.ftc.teamcode.commands.PrepareToIntake;
@@ -64,7 +66,7 @@ public class RobotController extends CommandOpMode {
     private PathBuilder builder;
 
     private GamepadEx driverController, operatorController;
-    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides, autoScore, endScore;
+    private GamepadButton intakeSpecimanDriver,intakeDownDriver, outtakeClaw, intakeClaw, intakeDown, manualIntake, intakeRotate,intakeRotate2, autoTransfer, prepareSpeciman, scoreSpeciman, intakeSpeciman, sampleScoring, retractElevator, drivingToggle, extendSlides, autoScore, endScore, autoIntaking;
 
     private FtcDashboard dashboard;
     private List<Action> runningActions;
@@ -73,8 +75,11 @@ public class RobotController extends CommandOpMode {
     public void initialize() {
         drivetrain = new DrivetrainSubsystem(hardwareMap, telemetry);
         elevator = new ElevatorSubsystem(hardwareMap, telemetry);
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
         intake = new IntakeSubsystem(hardwareMap, telemetry);
         led = new LEDSubsystem(hardwareMap, telemetry);
+        limelight.pipelineSwitch(0);
+        limelight.start();
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -84,7 +89,7 @@ public class RobotController extends CommandOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(parameters);
 
-        chain = drivetrain.getAutoScoringPath();
+        chain = Paths.fiveSpecimanAutoRenewed;
 
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
@@ -99,6 +104,7 @@ public class RobotController extends CommandOpMode {
         endScore = new GamepadButton(driverController, GamepadKeys.Button.BACK);
 
         intakeClaw = new GamepadButton(operatorController, GamepadKeys.Button.A);
+        autoIntaking = new GamepadButton(operatorController, GamepadKeys.Button.B);
         intakeDown = new GamepadButton(operatorController, GamepadKeys.Button.X);
         intakeSpeciman = new GamepadButton(operatorController, GamepadKeys.Button.Y);
         sampleScoring = new GamepadButton(operatorController, GamepadKeys.Button.RIGHT_BUMPER);
@@ -148,6 +154,8 @@ public class RobotController extends CommandOpMode {
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 )), intake));
 
+        autoIntaking.whenPressed(new AutoIntakingThenTransfer(drivetrain, elevator, intake, led, limelight));
+
 
         intakeRotate.toggleWhenPressed(new InstantCommand((() -> intake.intakeToPosition(
                 intake.getExtensionState(),
@@ -173,15 +181,8 @@ public class RobotController extends CommandOpMode {
                 intake.getClawState()
         ))));
 
-        autoScore.whenPressed(new SequentialCommandGroup(
-                new InstantCommand(() -> drivetrain.setAutoScoringState(DrivetrainSubsystem.AutoScoringState.ON)),
-                Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)),
-                Commands.scoreSpeciman(elevator),
-                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator))
-        ));
-
-        endScore.whenPressed(new InstantCommand(() -> drivetrain.follower.breakFollowing()).andThen(new IntakeSmapleThenRetract(elevator, intake, led)));
-
+        autoScore.whenPressed(new AutoScoringSpecimans(drivetrain, elevator));
+        endScore.whenPressed(new InstantCommand(() -> drivetrain.setAutoScoringState(DrivetrainSubsystem.AutoScoringState.OFF)).andThen(new IntakeSmapleThenRetract(elevator, intake, led)));
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
@@ -193,9 +194,9 @@ public class RobotController extends CommandOpMode {
                 () -> elevator.getViperPosition() > 3000
         )));
 
-        register(drivetrain, elevator);
+        register(drivetrain, elevator, intake);
         schedule(new RunCommand(telemetry::update));
-        drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, elevator, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
+        drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
         //drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
 
         telemetry.update();
@@ -207,6 +208,7 @@ public class RobotController extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
+            elevator.onInit();
             intake.onInit();
         }
 
