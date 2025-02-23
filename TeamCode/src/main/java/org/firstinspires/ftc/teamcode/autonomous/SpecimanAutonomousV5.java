@@ -70,7 +70,7 @@ public class SpecimanAutonomousV5 extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
-
+            intakeSubsystem.onInit();
         }
 
         waitForStart();

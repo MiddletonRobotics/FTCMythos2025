@@ -146,7 +146,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        /*
         telemetry.addData("Viper Current Position", getViperPosition());
         telemetry.addData("Viper Target Position", targetPosition);
         telemetry.addData("Viper Power", viperMotor.getPower());
@@ -155,7 +154,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         telemetry.addData("Wrist State", wristState);
         telemetry.addData("Claw State", clawState);
         telemetry.update();
-         */
     }
 
     public void elevatorToPosition(LiftState liftState) {
@@ -174,6 +172,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         wristServo.setPosition(this.wristState.getPosition());
         grabberServo.setPosition(this.clawState.getPosition());
     }
+
+    /*
+
+    public void onInit() {
+        elevatorToPosition(LiftState.RETRACTED);
+        manipulatorToPosition(ArmState.TRANSFER, WristState.TRANSFER, ClawState.OPEN_CLAW);
+    }
+
+    public void onAutoInit() {
+        elevatorToPosition(LiftState.RETRACTED);
+        manipulatorToPosition(ArmState.SPECIMAN_READY, WristState.SPECIMAN_READY, ClawState.CLOSE_CLAW);
+    }
+
+     */
 
     private void setLiftState(LiftState liftState) {
         viperState = liftState;

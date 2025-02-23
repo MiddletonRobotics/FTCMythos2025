@@ -6,7 +6,7 @@ public class Constants {
 
     public static final double ViperRetractedPosition = 0;
     public static final double ViperSpecimanReadyPosition = 1100;
-    public static final double ViperSpecimanScorePosition = 2075;
+    public static final double ViperSpecimanScorePosition = 2175;
     public static final double ViperLowGoalPosition = 1000;
     public static final double ViperHighGoalPosition = 3200;
 

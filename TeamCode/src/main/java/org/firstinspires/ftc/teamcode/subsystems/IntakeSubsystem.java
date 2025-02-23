@@ -133,6 +133,10 @@ public class IntakeSubsystem extends SubsystemBase {
         grabberServo.setPosition(this.clawState.getPosition());
     }
 
+    public void onInit() {
+        intakeToPosition(ExtensionState.STORED, ArmState.STORED, WristState.NORMAL, ClawState.CLOSE_CLAW);
+    }
+
     public ExtensionState getExtensionState() {
         return extensionState;
     }
