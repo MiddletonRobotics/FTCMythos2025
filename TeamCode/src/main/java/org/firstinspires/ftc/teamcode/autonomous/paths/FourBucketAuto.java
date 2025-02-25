@@ -55,14 +55,14 @@ public class FourBucketAuto {
                         // Line 6
                         new BezierLine(
                                 new Point(6.000, 128.000, Point.CARTESIAN),
-                                new Point(37.000, 128.200, Point.CARTESIAN)
+                                new Point(37.000, 129.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(37.000, 128.200, Point.CARTESIAN),
+                                new Point(37.000, 129.000, Point.CARTESIAN),
                                 new Point(5.500, 128.000, Point.CARTESIAN)
                         )
                 )

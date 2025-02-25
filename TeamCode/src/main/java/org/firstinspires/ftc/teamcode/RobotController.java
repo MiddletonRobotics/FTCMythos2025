@@ -89,7 +89,21 @@ public class RobotController extends CommandOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(parameters);
 
-        chain = Paths.fiveSpecimanAutoRenewed;
+        builder = new PathBuilder();
+        chain = builder.addPath(
+                new BezierLine(
+                        new Point(
+                                drivetrain.follower.getPose().getX(),
+                                drivetrain.follower.getPose().getY(),
+                                Point.CARTESIAN
+                        ),
+                        new Point(31.000, 80.000, Point.CARTESIAN)
+                )
+        ).setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                                new Point(35.000,  80.000,  Point.CARTESIAN),
+                                new Point(5.000, 36.000, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
         driverController = new GamepadEx(gamepad1);
         operatorController = new GamepadEx(gamepad2);
@@ -181,8 +195,51 @@ public class RobotController extends CommandOpMode {
                 intake.getClawState()
         ))));
 
-        autoScore.whenPressed(new AutoScoringSpecimans(drivetrain, elevator));
-        endScore.whenPressed(new InstantCommand(() -> drivetrain.setAutoScoringState(DrivetrainSubsystem.AutoScoringState.OFF)).andThen(new IntakeSmapleThenRetract(elevator, intake, led)));
+        autoScore.whenPressed(new SequentialCommandGroup(
+                Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator))),
+                Commands.scoreSpeciman(elevator),
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
+                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
+                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(0)).alongWith(Commands.prepareSpeciman(elevator)))
+
+        ));
+        endScore.whenPressed(new InstantCommand(() -> drivetrain.follower.breakFollowing()).andThen(new IntakeSmapleThenRetract(elevator, intake, led).alongWith(new InstantCommand(() -> drivetrain.follower.startTeleopDrive()))));
 
         intakeSpeciman.whenPressed(new IntakeFromWall(elevator));
         prepareSpeciman.whenPressed(new PrepareSpeciman(elevator));
@@ -195,7 +252,7 @@ public class RobotController extends CommandOpMode {
         )));
 
         register(drivetrain, elevator, intake);
-        schedule(new RunCommand(telemetry::update));
+        schedule(new RunCommand(telemetry::update), new RunCommand(() -> drivetrain.follower.update()));
         drivetrain.setDefaultCommand(new RobotDriveFollower(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
         //drivetrain.setDefaultCommand(new RobotOrientedDrive(drivetrain, driverController::getLeftX, driverController::getLeftY, driverController::getRightX));
 

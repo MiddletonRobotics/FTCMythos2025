@@ -12,7 +12,7 @@ public class Constants {
 
     public static final double ElevatorArmTransferPosition = 0.0;
     public static final double ElevatorArmIntakingPosition = 1.0; //0.96 0.99
-    public static final double ElevatorArmBucketPosition = 0.65;
+    public static final double ElevatorArmBucketPosition = 0.55;
     public static final double ElevatorArmSpecimanPosition = 0.1;
 
     public static final double ElevatorWristTransferPosition = 0.85;
