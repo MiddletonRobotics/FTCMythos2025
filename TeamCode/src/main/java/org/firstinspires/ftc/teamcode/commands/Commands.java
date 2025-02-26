@@ -46,5 +46,5 @@ public class Commands {
     public static Command closeClaw(ElevatorSubsystem elevatorSubsystem) { return  new CloseClaw(elevatorSubsystem); }
     public static Command fullyCloseClaw(ElevatorSubsystem elevatorSubsystem) { return  new FullyCloseClaw(elevatorSubsystem); }
     public static Command RotateIntakeToPosition(IntakeSubsystem intakeSubsystem) { return new RotateIntakeToPosition(intakeSubsystem); }
-    public static Command alignToWall(DrivetrainSubsystem drivetrainSubsystem) { return new AutoAlignToWall(drivetrainSubsystem); }
+    public static Command alignToWall(DrivetrainSubsystem drivetrainSubsystem, Follower follower) { return new AutoAlignToWall(drivetrainSubsystem, follower); }
 }

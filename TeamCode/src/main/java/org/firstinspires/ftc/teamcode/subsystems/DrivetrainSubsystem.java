@@ -28,6 +28,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private PathBuilder builder;
     private boolean breakFollowingSupplier;
 
+    public Pose pickupPosition = new Pose(0,0,0);
+
     public enum AutoScoringState {
         ON,
         OFF
@@ -83,8 +85,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         telemetry.addData("Drivetrain Pose Y", follower.getPose().getY());
         telemetry.addData("Drivetrain Heading", follower.getPose().getHeading());
         telemetry.update();
-
-        follower.update();
 
         switch (autoScoringState) {
             case ON:

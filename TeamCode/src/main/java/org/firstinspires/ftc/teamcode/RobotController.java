@@ -97,12 +97,12 @@ public class RobotController extends CommandOpMode {
                                 drivetrain.follower.getPose().getY(),
                                 Point.CARTESIAN
                         ),
-                        new Point(31.000, 80.000, Point.CARTESIAN)
+                        new Point(33.60, 75.000, Point.CARTESIAN)
                 )
         ).setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
-                                new Point(35.000,  80.000,  Point.CARTESIAN),
-                                new Point(5.000, 36.000, Point.CARTESIAN)))
+                                new Point(33.600,  75.000,  Point.CARTESIAN),
+                                new Point(3.000, 36.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
         driverController = new GamepadEx(gamepad1);

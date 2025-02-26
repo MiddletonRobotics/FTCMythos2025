@@ -18,11 +18,12 @@ public class ScoreSpeciman extends CommandBase {
         elevatorSubsystem.manipulatorToPosition(
                 ElevatorSubsystem.ArmState.SPECIMAN_SCORE,
                 ElevatorSubsystem.WristState.SPECIMAN_SCORE,
-                elevatorSubsystem.getClawState()
+                ElevatorSubsystem.ClawState.FULLY_CLOSE_CLAW
         );
 
         elevatorSubsystem.elevatorTimer.resetTimer();
     }
+
 
     @Override
     public void execute() {
