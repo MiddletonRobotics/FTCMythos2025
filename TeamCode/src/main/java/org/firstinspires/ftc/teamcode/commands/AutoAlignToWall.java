@@ -16,8 +16,8 @@ public class AutoAlignToWall extends CommandBase {
     private double lastErrorDistance, errorDistance, distance = 0;
     private double correctionY;
 
-    private static final double kPtx = 0.225;
-    private static final double kDtx = 0.03;
+    private static final double kPtx = 0.255;
+    private static final double kDtx = 0.028;
 
     private Timer timer;
 
@@ -50,7 +50,7 @@ public class AutoAlignToWall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.getElapsedTimeSeconds() > 0.5;
+        return timer.getElapsedTimeSeconds() > 0.4;
     }
 
     @Override

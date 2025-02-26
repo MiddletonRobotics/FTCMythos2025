@@ -49,7 +49,7 @@ public class SpecimanAutonomousV8 extends CommandOpMode {
                         Commands.fastPath(follower, chain.getPath(4)),
                         Commands.fastPath(follower, chain.getPath(5)).alongWith(new InstantCommand(() -> elevatorSubsystem.viperMotor.setMotorEnable())),
                         Commands.fastPath(follower, chain.getPath(6)).alongWith(Commands.intakeFromWall(elevatorSubsystem)),
-                        Commands.sleep(250),
+                        Commands.sleep(100),
                         Commands.alignToWall(drivetrainSubsystem, follower),
                         Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
                         Commands.fastPath(follower, chain.getPath(7)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
