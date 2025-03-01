@@ -146,6 +146,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        /*
         telemetry.addData("Viper Current Position", getViperPosition());
         telemetry.addData("Viper Target Position", targetPosition);
         telemetry.addData("Viper Power", viperMotor.getPower());
@@ -153,7 +154,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         telemetry.addData("Arm State", armState);
         telemetry.addData("Wrist State", wristState);
         telemetry.addData("Claw State", clawState);
-        telemetry.update();
+        telemetry.update();S
+         */
     }
 
     public void elevatorToPosition(LiftState liftState) {

@@ -39,26 +39,32 @@ public class BucketAutonomousV1 extends CommandOpMode {
                         Commands.sleep(500),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(1))),
+                        Commands.sleep(100),
                         Commands.IntakeDown(intakeSubsystem),
+                        Commands.sleep(100),
                         Commands.sleep(300).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(2)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
                         Commands.sleep(500),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
-                        Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(3))),
+                        Commands.followPath(follower, chain.getPath(3)).alongWith(Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem)),
+                        Commands.sleep(100),
                         Commands.IntakeDown(intakeSubsystem),
+                        Commands.sleep(100),
                         Commands.sleep(300).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(4)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
                         Commands.sleep(500),
                         Commands.scoreBucketThenRetract(elevatorSubsystem),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(5))),
                         Commands.RotateIntakeToPosition(intakeSubsystem),
+                        Commands.sleep(100),
                         Commands.IntakeDown(intakeSubsystem),
+                        Commands.sleep(100),
                         Commands.sleep(300).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(6)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
                         Commands.sleep(500).andThen(Commands.scoreBucketThenRetract(elevatorSubsystem)),
                         Commands.prepareIntakeWithoutExtension(elevatorSubsystem, intakeSubsystem).alongWith(Commands.followPath(follower, chain.getPath(7))),
                         Commands.RotateIntakeToPosition(intakeSubsystem),
-                        Commands.sleep(50).andThen(Commands.IntakeDown(intakeSubsystem)),
+                        Commands.sleep(100).andThen(Commands.IntakeDown(intakeSubsystem)),
                         Commands.sleep(350).andThen(Commands.intakeTransferWithoutRetraction(elevatorSubsystem, intakeSubsystem)),
                         Commands.followPath(follower, chain.getPath(8)).alongWith(Commands.prepareBucket(elevatorSubsystem)),
                         Commands.sleep(500),
@@ -72,7 +78,7 @@ public class BucketAutonomousV1 extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
-
+            elevatorSubsystem.onAutoInit();
         }
 
         waitForStart();
@@ -80,11 +86,14 @@ public class BucketAutonomousV1 extends CommandOpMode {
         // run the scheduler
         while (!isStopRequested() && opModeIsActive()) {
             run();
+            /*
             telemetry.addData("Viper Motor Power", elevatorSubsystem.viperMotor.getPower());
             telemetry.addData("Follower Position X", follower.getPose().getX());
             telemetry.addData("Follower Position Y", follower.getPose().getX());
             telemetry.addData("Follower Heading", follower.getPose().getHeading());
             telemetry.addData("Follower Busy", follower.isBusy());
+
+             */
         }
 
         reset();

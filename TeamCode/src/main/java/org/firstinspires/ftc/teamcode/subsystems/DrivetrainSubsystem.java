@@ -42,7 +42,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         rearUltra = aHardwareMap.get(AnalogInput.class, "rearUltra");
 
         follower = new Follower(aHardwareMap);
-        follower.setPose(new Pose(0.5, 66.0, 0.0));
+        follower.setPose(new Pose(0.5, 73.0, 0.0));
         this.telemetry = telemetry;
     }
 
@@ -81,10 +81,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        /*
         telemetry.addData("Drivetrain Pose X", follower.getPose().getX());
         telemetry.addData("Drivetrain Pose Y", follower.getPose().getY());
         telemetry.addData("Drivetrain Heading", follower.getPose().getHeading());
         telemetry.update();
+
+         */
 
         switch (autoScoringState) {
             case ON:

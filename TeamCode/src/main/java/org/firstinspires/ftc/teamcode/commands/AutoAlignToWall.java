@@ -50,7 +50,7 @@ public class AutoAlignToWall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.getElapsedTimeSeconds() > 0.4;
+        return timer.getElapsedTimeSeconds() > 0.4 || (distance - target < 0.05 && distance - target > - 0.05);
     }
 
     @Override

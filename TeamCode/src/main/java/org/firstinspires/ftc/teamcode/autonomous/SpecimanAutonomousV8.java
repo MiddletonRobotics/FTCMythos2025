@@ -66,15 +66,7 @@ public class SpecimanAutonomousV8 extends CommandOpMode {
                         Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
                         Commands.fastPath(follower, chain.getPath(11)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
                         (Commands.scoreSpeciman(elevatorSubsystem)),
-                        Commands.fastPath(follower, chain.getPath(12)).alongWith(Commands.retractThenIntake(elevatorSubsystem)),
-                        Commands.sleep(250),
-                        Commands.alignToWall(drivetrainSubsystem, follower),
-                        Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
-                        Commands.fastPath(follower, chain.getPath(13)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
-                        Commands.sleep(100),
-                        (Commands.scoreSpeciman(elevatorSubsystem)),
-                        Commands.fastPath(follower, chain.getPath(14)).alongWith(Commands.retractElevator(elevatorSubsystem))
-                )
+                        Commands.fastPath(follower, chain.getPath(12)).alongWith(Commands.retractElevator(elevatorSubsystem)))
         );
     }
 
@@ -83,7 +75,7 @@ public class SpecimanAutonomousV8 extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
-            intakeSubsystem.onInit();
+            elevatorSubsystem.onAutoInit();
         }
 
         waitForStart();

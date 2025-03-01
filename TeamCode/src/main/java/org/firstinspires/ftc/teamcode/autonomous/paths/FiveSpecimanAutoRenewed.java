@@ -15,14 +15,14 @@ public class FiveSpecimanAutoRenewed {
                         // Line 1
                         new BezierLine(
                                 new Point(0.500, 73.000, Point.CARTESIAN),
-                                new Point(31.000, 84.000, Point.CARTESIAN)
+                                new Point(30.000, 90.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(31.000, 84.000, Point.CARTESIAN),
+                                new Point(30.000, 90.000, Point.CARTESIAN),
                                 new Point(1.000, 38.000, Point.CARTESIAN),
                                 new Point(54.000, 41.000, Point.CARTESIAN)
                         )
@@ -75,65 +75,56 @@ public class FiveSpecimanAutoRenewed {
                         // Line 8
                         new BezierLine(
                                 new Point(-1.000, 22.000, Point.CARTESIAN),
-                                new Point(31.000, 82.000, Point.CARTESIAN)
+                                new Point(31.000, 85.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 9
                         new BezierLine(
-                                new Point(31.000, 82.000, Point.CARTESIAN),
-                                new Point(3.250, 36.000, Point.CARTESIAN)
+                                new Point(31.000, 85.000, Point.CARTESIAN),
+                                new Point(2.500, 36.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 10
                         new BezierLine(
-                                new Point(3.250, 36.000, Point.CARTESIAN),
-                                new Point(31.000, 81.000, Point.CARTESIAN)
+                                new Point(2.500, 36.000, Point.CARTESIAN),
+                                new Point(31.000, 84.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 11
                         new BezierLine(
-                                new Point(31.000, 81.000, Point.CARTESIAN),
-                                new Point(3.250, 36.000, Point.CARTESIAN)
+                                new Point(31.000, 84.000, Point.CARTESIAN),
+                                new Point(2.500, 36.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 12
                         new BezierLine(
-                                new Point(3.250, 36.000, Point.CARTESIAN),
-                                new Point(31.000, 80.000, Point.CARTESIAN)
+                                new Point(2.500, 36.000, Point.CARTESIAN),
+                                new Point(31.000, 82.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 13
                         new BezierLine(
-                                new Point(31.000, 80.000, Point.CARTESIAN),
-                                new Point(2.250, 36.000, Point.CARTESIAN)
+                                new Point(31.000, 82.000, Point.CARTESIAN),
+                                new Point(2.500, 36.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 14
                         new BezierCurve(
-                                new Point(2.250, 36.000, Point.CARTESIAN),
+                                new Point(2.500, 36.000, Point.CARTESIAN),
                                 new Point(15.000, 70.000, Point.CARTESIAN),
-                                new Point(29.500, 78.000, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addPath(
-                        // Line 15
-                        new BezierCurve(
-                                new Point(29.500, 78.000, Point.CARTESIAN),
-                                new Point(15.000, 70.000, Point.CARTESIAN),
-                                new Point(4.000, 36.000, Point.CARTESIAN)
+                                new Point(31.000, 81.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0));

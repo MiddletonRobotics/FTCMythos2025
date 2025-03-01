@@ -27,9 +27,9 @@ public class ScoreSpeciman extends CommandBase {
 
     @Override
     public void execute() {
-        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.4) {
+        if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.45) {
             elevatorSubsystem.elevatorToPosition(ElevatorSubsystem.LiftState.SPECIMAN_SCORE);
-        } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.4 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.45) {
+        } else if(elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() >= 0.45 && elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() < 0.5) {
             elevatorSubsystem.manipulatorToPosition(
                     ElevatorSubsystem.ArmState.TRANSFER,
                     ElevatorSubsystem.WristState.TRANSFER,
@@ -40,6 +40,6 @@ public class ScoreSpeciman extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 0.45;
+        return elevatorSubsystem.elevatorTimer.getElapsedTimeSeconds() > 0.5;
     }
 }

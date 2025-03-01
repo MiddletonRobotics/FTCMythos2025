@@ -59,8 +59,7 @@ public class SpecimanAutonomousV5 extends CommandOpMode {
                         Commands.sleep(50).andThen(Commands.closeClaw(elevatorSubsystem)),
                         Commands.fastPath(follower, chain.getPath(13)).alongWith(Commands.prepareSpeciman(elevatorSubsystem)),
                         Commands.sleep(100),
-                        (Commands.scoreSpeciman(elevatorSubsystem)),
-                        Commands.fastPath(follower, chain.getPath(14)).alongWith(Commands.retractElevator(elevatorSubsystem))
+                        (Commands.scoreSpecimanThenRetract(elevatorSubsystem))
                 )
         );
     }
@@ -70,7 +69,7 @@ public class SpecimanAutonomousV5 extends CommandOpMode {
         initialize();
 
         while (!opModeIsActive()) {
-            intakeSubsystem.onInit();
+            elevatorSubsystem.onAutoInit();
         }
 
         waitForStart();

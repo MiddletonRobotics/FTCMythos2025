@@ -110,13 +110,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        /*
         telemetry.addData("Extension State", extensionState);
         telemetry.addData("Arm State", armState);
         telemetry.addData("Wrist State", wristState);
         telemetry.addData("Claw State", clawState);
         telemetry.update();
-         */
     }
 
     public void intakeToPosition(ExtensionState extensionState, ArmState armState, WristState wristState, ClawState clawState) {
@@ -131,10 +129,6 @@ public class IntakeSubsystem extends SubsystemBase {
         rightArmServo.setPosition(this.armState.getPosition());
         wristServo.setPosition(this.wristState.getPosition());
         grabberServo.setPosition(this.clawState.getPosition());
-    }
-
-    public void onInit() {
-        intakeToPosition(ExtensionState.STORED, ArmState.STORED, WristState.NORMAL, ClawState.CLOSE_CLAW);
     }
 
     public ExtensionState getExtensionState() {
