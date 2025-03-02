@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.drivebase.RobotDrive;
-import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private MecanumDrive mecanumDrive;
@@ -25,17 +21,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private Telemetry telemetry;
 
     public Follower follower;
-    private PathBuilder builder;
-    private boolean breakFollowingSupplier;
-
     public Pose pickupPosition = new Pose(0,0,0);
 
-    public enum AutoScoringState {
-        ON,
-        OFF
-    }
+    private DistanceUnit unit = DistanceUnit.INCH;
+    private final Queue<Double> sensorRearData = new LinkedList<>();
+    private double sensorRearAverage;
 
-    private AutoScoringState autoScoringState = AutoScoringState.OFF;
+    public static int rollingAverageSize = 3;
 
     public DrivetrainSubsystem(HardwareMap aHardwareMap, Telemetry telemetry) {
         mecanumDrive = new MecanumDrive(aHardwareMap);
@@ -46,60 +38,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
         this.telemetry = telemetry;
     }
 
-    public PathChain getAutoScoringPath() {
-        builder = new PathBuilder();
-        return builder
-            .addPath(
-                new BezierLine(
-                        new Point(follower.getPose().getX(), follower.getPose().getY(), Point.CARTESIAN),
-                        new Point(31.000, 80.000, Point.CARTESIAN)
-                )
-            ).setConstantHeadingInterpolation(Math.toRadians(0))
-            .addPath(
-                new BezierLine(
-                        new Point(31.000, 80.000, Point.CARTESIAN),
-                        new Point(follower.getPose().getX(), follower.getPose().getY(), Point.CARTESIAN)
-                )
-            ).setConstantHeadingInterpolation(Math.toRadians(0)).build();
-    }
-
-    public double getRearUltrasonicDistance() {
-        if (rearUltra == null) {
-            telemetry.addData("Warning", "Ultrasonic sensor not initialized");
-            return Double.MAX_VALUE;
-        }
-        return (100 * (rearUltra.getVoltage() / 5)) / 2.54;
-    }
-
-    public void setAutoScoringState(AutoScoringState autoScoringState) {
-        this.autoScoringState = autoScoringState;
-    }
-
-    public AutoScoringState getAutoScoringState() {
-        return this.autoScoringState;
-    }
-
     @Override
     public void periodic() {
-        /*
+        sensorRearData.add(rearUltra.getVoltage());
+        if (sensorRearData.size() > rollingAverageSize) {
+            sensorRearData.remove();
+        }
+
+        // noinspection OptionalGetWithoutIsPresent
+        sensorRearAverage = sensorRearData.stream().reduce((total, el) -> total + el / sensorRearData.size()).get();
+
         telemetry.addData("Drivetrain Pose X", follower.getPose().getX());
         telemetry.addData("Drivetrain Pose Y", follower.getPose().getY());
         telemetry.addData("Drivetrain Heading", follower.getPose().getHeading());
+        telemetry.addData("Rear Ultrasonic Reading", sensorRearAverage);
         telemetry.update();
+    }
 
-         */
+    public void setDistanceUnit(DistanceUnit distanceUnit) {
+        unit = distanceUnit;
+    }
 
-        switch (autoScoringState) {
-            case ON:
-                breakFollowingSupplier = false;
-            case OFF:
-                if(!breakFollowingSupplier) {
-                    follower.breakFollowing();
-                    follower.startTeleopDrive();
-                    breakFollowingSupplier = true;
-                }
-                break;
-        }
+    public double getRearUltrasonicDistance() {
+        return unit.fromCm(sensorRearAverage * 500 / 3.3);
     }
 
     public void resetHeading(IMU imu) {
