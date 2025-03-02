@@ -13,12 +13,12 @@ public class Constants {
     public static final double ElevatorArmTransferPosition = 0.0;
     public static final double ElevatorArmIntakingPosition = 1.0; //0.96 0.99
     public static final double ElevatorArmBucketPosition = 0.58;
-    public static final double ElevatorArmSpecimanPosition = 0.09;
+    public static final double ElevatorArmSpecimanPosition = 0.12;
 
     public static final double ElevatorWristTransferPosition = 0.81;
     public static final double ElevatorWristSpecimanPosition = 0.45;
     public static final double ElevatorWristBucketPosition = 0.2;
-    public static final double ElevatorWristIntakingPosition = 0.65;
+    public static final double ElevatorWristIntakingPosition = 0.60;
 
     public static final double ElevatorClawOpenPosition = 0.7;
     public static final double ElevatorClawClosedPosition = 0.965;

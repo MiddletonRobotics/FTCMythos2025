@@ -98,24 +98,12 @@ public class RobotController extends CommandOpMode {
                                 drivetrain.follower.getPose().getY(),
                                 Point.CARTESIAN
                         ),
-                        new Point(32.000, 89.000, Point.CARTESIAN)
+                        new Point(32.000, 84.000, Point.CARTESIAN)
                 )
         ).setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
-                                new Point(32.000,  89.000,  Point.CARTESIAN),
-                                new Point(3.000, 36.000, Point.CARTESIAN)))
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addPath(new BezierLine(
-                        new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 87.500, Point.CARTESIAN)))
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addPath(new BezierLine(
-                        new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 86.000, Point.CARTESIAN)))
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addPath(new BezierLine(
-                        new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 84.500, Point.CARTESIAN)))
+                                new Point(32.000,  84.000,  Point.CARTESIAN),
+                                new Point(2.500, 36.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
@@ -123,7 +111,7 @@ public class RobotController extends CommandOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 81.500, Point.CARTESIAN)))
+                        new Point(32.000, 81.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
@@ -131,7 +119,7 @@ public class RobotController extends CommandOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 78.500, Point.CARTESIAN)))
+                        new Point(32.000, 78.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
@@ -139,7 +127,11 @@ public class RobotController extends CommandOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 75.500, Point.CARTESIAN)))
+                        new Point(32.000, 76.000, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Point(3.000,  36.000,  Point.CARTESIAN),
+                        new Point(32.000, 75.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
@@ -147,7 +139,15 @@ public class RobotController extends CommandOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(new BezierLine(
                         new Point(3.000,  36.000,  Point.CARTESIAN),
-                        new Point(32.000, 62.500, Point.CARTESIAN)))
+                        new Point(32.000, 73.000, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Point(3.000,  36.000,  Point.CARTESIAN),
+                        new Point(32.000, 72.000, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(new BezierLine(
+                        new Point(3.000,  36.000,  Point.CARTESIAN),
+                        new Point(32.000, 71.000, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(Math.toRadians(0)).build();
 
         driverController = new GamepadEx(gamepad1);
@@ -213,7 +213,7 @@ public class RobotController extends CommandOpMode {
                         IntakeSubsystem.ClawState.CLOSE_CLAW
                 )), intake));
 
-        autoIntaking.whenPressed(new InstantCommand(() -> drivetrain.follower.setPose(new Pose(0.5, 8, 0))));
+        autoIntaking.whenPressed(new InstantCommand(() -> drivetrain.follower.setPose(new Pose(0.5, 18, 0))));
 
 
         intakeRotate.toggleWhenPressed(new InstantCommand((() -> intake.intakeToPosition(
@@ -279,10 +279,7 @@ public class RobotController extends CommandOpMode {
                 Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
                 Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(10)).alongWith(Commands.prepareSpeciman(elevator))),
                 Commands.scoreSpeciman(elevator),
-                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractThenIntake(elevator)),
-                Commands.sleep(50).andThen(Commands.closeClaw(elevator)),
-                Commands.sleep(50).andThen(Commands.fastPath(drivetrain.follower, chain.getPath(11)).alongWith(Commands.prepareSpeciman(elevator))),
-                Commands.scoreSpeciman(elevator)
+                Commands.fastPath(drivetrain.follower, chain.getPath(1)).alongWith(Commands.retractElevator(elevator))
 
         ));
         endScore.whenPressed(new InstantCommand(() -> drivetrain.follower.breakFollowing()).andThen(new IntakeSmapleThenRetract(elevator, intake, led).alongWith(new InstantCommand(() -> drivetrain.follower.startTeleopDrive()))));

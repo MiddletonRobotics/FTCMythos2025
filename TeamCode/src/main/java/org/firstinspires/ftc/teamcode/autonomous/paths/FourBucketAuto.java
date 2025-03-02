@@ -87,10 +87,10 @@ public class FourBucketAuto {
                         // Line 10
                         new BezierLine(
                                 new Point(5.500, 128.000, Point.CARTESIAN),
-                                new Point(6.000, 30.000, Point.CARTESIAN)
+                                new Point(20.000, 120.000, Point.CARTESIAN)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-90));
+                .setConstantHeadingInterpolation(Math.toRadians(0));
 
         return builder.build();
     }
